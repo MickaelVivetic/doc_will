@@ -1,0 +1,182 @@
+"/users/me/actions": {
+      "get": {
+        "tags": ["groww-api-next", "actions"],
+        "summary": "Get all actions for the authenticated user",
+        "description": "Retrieve a paginated list of actions performed by the current authenticated user.",
+        "operationId": "getActions",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "description": "Page number for pagination"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "description": "Number of items per page"
+            }
+          },
+          {
+            "name": "plantId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter by plant ID"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of actions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "pagination": {
+                          "type": "object",
+                          "properties": {
+                            "page": {
+                              "type": "integer"
+                            },
+                            "pageSize": {
+                              "type": "integer"
+                            },
+                            "pageCount": {
+                              "type": "integer"
+                            },
+                            "total": {
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Action"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameters"
+          }
+        }
+      },
+      "post": {
+        "tags": ["groww-api-next", "actions"],
+        "summary": "Create a new action for the authenticated user",
+        "description": "Create a new action for the current authenticated user.",
+        "operationId": "createAction",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAction"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Action created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The ID of the created action"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data"
+          }
+        }
+      }
+    },
+    "/users/me/actions/{id}": {
+      "get": {
+        "tags": ["groww-api-next", "actions"],
+        "summary": "Get a specific action by ID",
+        "description": "Retrieve a specific action performed by the current authenticated user by its ID.",
+        "operationId": "getActionById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "ID of the action to retrieve"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The requested action",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Action"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Action not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["groww-api-next", "actions"],
+        "summary": "Delete an action by ID",
+        "description": "Delete a specific action performed by the current authenticated user by its ID.",
+        "operationId": "deleteActionById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "ID of the action to delete"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Action deleted successfully"
+          },
+          "404": {
+            "description": "Action not found"
+          },
+          "403": {
+            "description": "You are not authorized to delete this action"
+          }
+        }
+      }
+    }
+  }

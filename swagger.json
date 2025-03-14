@@ -1,0 +1,3197 @@
+{
+    "basePath": "/",
+    "info": {
+        "title": "GROWW - Documentation de l’architecture globale",
+        "version": "1.0.0"
+    },
+    "swagger": "2.0",
+    "host": "https://api.recette.groww.fr",
+    "schemes": ["https"],
+    "tags": [
+        {
+            "name": "Installation",
+            "description": "
+        <section id='contexte'>
+            <h2>Contexte</h2>
+            <p><strong>Groww.fr</strong> est une application développée par Willemse SAS, spécialisée dans l’accompagnement des jardiniers, amateurs et experts, dans l’entretien de leurs plantes. 
+            Elle fournit des conseils personnalisés, des rappels d’entretien et des recommandations adaptées aux saisons et aux types de végétaux.</p>
+            <h3>L’écosystème technique</h3>
+            <ul>
+                <li><strong>willemse-groww-app:</strong> L’application mobile développée avec Expo (React Native), permettant aux utilisateurs de suivre leurs plantes et de recevoir des conseils.</li>
+                <li><strong>Groww-api-next:</strong> L’API Next.js qui alimente l’application en données et gère les interactions utilisateur.</li>
+                <li><strong>Groww-algorithm:</strong> Module dédié aux recommandations et à l’intelligence derrière l’assistant jardinier.</li>
+                <li><strong>groww-backoffice:</strong> Interface de gestion pour l’administration des contenus et des utilisateurs.</li>
+                <li><strong>Groww-scripts-next:</strong> Scripts et outils d’automatisation pour la maintenance et le déploiement des services.</li>
+            </ul>
+        </section>
+        <section id='installation'>
+            <h2>Guide d'Installation</h2>
+            <h3>Prérequis</h3>
+            <p>Avant de commencer l'installation, assurez-vous d'avoir les logiciels suivants :</p>
+            <ul>
+                <li>Compte Gitlab</li>
+                <li>Compte Github</li>
+                <li>Compte EAS (Expo Application Service)</li>
+                <li>Openssl</li>
+                <li>Docker Desktop</li>
+                <li>Android Studio</li>
+                <li>Git</li>
+                <li>Putty ou Mobaxterm ou autre</li>
+                <li>Mongo Compass</li>
+                <li>Node, npm, npx</li>
+            </ul>
+            <h3>Installation de willemse-groww-app</h3>
+            <h4>Configuration d'Android Studio</h4>
+            <p>Dans Device Manager, ajouter un nouvel appareil.</p>
+            <ol>
+                <li>Cliquez sur + -> Create Virtual Device -> Choisir un appareil.</li>
+                <li>Sélectionnez l'API (API 35 VanillaIceCream utilisée pour les tests).</li>
+                <li>Choisissez un nom pour l’appareil -> Finish.</li>
+                <li>Lancez l’émulation.</li>
+            </ol>
+            <h4>Commandes à exécuter</h4>
+            <pre>git clone https://github.com/Willemse-SAS/willemse-groww-app.git
+cd willemse-groww-app
+npm install --legacy-peer-deps
+npx expo start</pre>
+            <p><strong>Lancement de l'application :</strong></p>
+            <ul>
+                <li><strong>Android:</strong> Pressez <code>a</code> dans le terminal. Lancez Android Studio avec l’émulation (Smartphone utilisé : Pixel Fold API 35).</li>
+                <li><strong>Web:</strong> Pressez <code>w</code> dans le terminal. Ouvrez un navigateur et utilisez le lien fourni par Expo.</li>
+            </ul>
+            <h3>Installation de Groww-api-next</h3>
+            <h4>Configuration SSH et GitLab</h4>
+            <p>Démarrer le service SSH-Agent dans PowerShell :</p>
+            <pre>Get-Service ssh-agent | Set-Service -StartupType Automatic
+Start-Service ssh-agent</pre>
+            <h4>Création et ajout de la clé SSH</h4>
+            <pre>ssh-keygen -t rsa -b 4096 -C ton-email@example.com
+ssh-add
+ssh-add -l
+ssh -T git@gitlab.com</pre>
+            <h3>Lancement sur Docker</h3>
+            <pre>docker build -t mon-app .
+docker cp ~/.ssh/id_rsa node-container:/root/.ssh/id_rsa
+ssh -T git@gitlab.com</pre>
+            <h3>Lancement de l'application en local</h3>
+            <pre>npm run dev</pre>
+            <h3>Installation de Groww-algorithm</h3>
+            <pre>git clone https://gitlab.com/Groww/Groww-algorithm.git
+npm install --legacy-peer-deps</pre>
+            <h3>Installation de groww-backoffice</h3>
+            <pre>git clone https://gitlab.com/Groww/groww-backoffice.git
+cd groww-backoffice
+npm install --legacy-peer-deps</pre>
+            <h4>Configuration de Docker</h4>
+            <pre>docker-compose up –build</pre>
+            <h4>Création de la base de données</h4>
+            <pre>docker exec -it groww-backoffice-mariadb-1 mariadb -u root -pchangeme
+CREATE DATABASE groww_backoffice;
+Exit;</pre>
+            <h4>Création des tables</h4>
+            <pre>docker exec -i groww-backoffice-mariadb-1 mariadb -uroot -pchangeme groww_backoffice < install/create_database.sql</pre>
+            <h3>Lancement en local</h3>
+            <p>Accéder à l'interface via les différents ports d’accès vus dans Docker Desktop (Ex: <code>http://localhost:9080/</code>).</p>
+            <h3>Installation de Groww-scripts-next</h3>
+            <pre>git clone https://gitlab.com/Groww/groww-script-next.git
+npm install --legacy-peer-deps</pre>
+            <h4>Configuration SSH et GitLab</h4>
+            <pre>Get-Service ssh-agent | Set-Service -StartupType Automatic
+Start-Service ssh-agent
+ssh-add -l
+ssh -T git@gitlab.com</pre>
+            <p>Si la connexion échoue, ajoutez la clé SSH dans GitLab et testez à nouveau :</p>
+            <pre>ssh -T git@gitlab.com</pre>
+        </section>"
+          },
+          {
+            "name": "Schema fonctionnel",
+            "description": "<div style='height:1040px' style='display: inline-block; overflow: hidden; cursor: zoom-in;'><img src='./GR.png' alt='Prévisions météorologiques' style='transform: scale(2.0); padding-left:200px; margin-top:270px' /></div>",
+          },
+      {
+        "name": "Groww-api-next",
+        "description": "API principale Groww"
+      },
+      {
+        "name": "Groww-algorithm",
+        "description": "Algorithme des taches, \"intelligence\" de groww"
+      },
+      {
+        "name": "Groww-scripts-next",
+        "description": "Drivers de groww"
+      }
+      ,
+      {
+        "name": "Groww-backoffice",
+        "description": "The backoffice 👌"
+      }
+    ],
+    "paths": {
+        "extract-weather / index":{"get": {
+    "tags": ["Groww-scripts-next"],
+    "summary": "extract-weather / index",
+    "description": "<p>Cette API est responsable de l'extraction et du traitement des données météorologiques pour les villes des utilisateurs. Elle interroge l'API OpenWeather pour obtenir les prévisions et les conditions météorologiques actuelles et les stocke dans Elasticsearch pour un accès ultérieur. L'API calcule également l'évapotranspiration potentielle (ETP) basée sur les conditions météorologiques et les données historiques pour ajuster les stocks d'eau.</p>\n
+    <h3>Exemples d'utilisation :</h3>\n
+    <pre><code class=\"language-javascript\">const user = { id: 1, cityId: \"city_id\" };\n\nextractWeatherData(user, retryCount);</code></pre>\n\n
+    <h3>Explication des processus internes :</h3>\n
+    <p>Voici un aperçu détaillé du processus de traitement des données météorologiques :</p>\n
+    <ul>\n
+      <li><strong>Récupération des utilisateurs :</strong> L'API récupère tous les utilisateurs ayant une ville définie et collecte les informations nécessaires à partir de la base de données.</li>\n
+      <li><strong>Extraction des données météorologiques :</strong> Les données météorologiques actuelles et les prévisions sont extraites via l'API OpenWeather en utilisant les coordonnées des villes des utilisateurs.</li>\n
+      <li><strong>Calcul de l'ETP :</strong> L'API calcule l'évapotranspiration potentielle (ETP) basée sur les températures moyennes et les conditions météorologiques des mois précédents pour chaque ville, ce qui permet d'ajuster le niveau de stock d'eau pour les cultures locales.</li>\n
+      <li><strong>Stockage des données dans Elasticsearch :</strong> Les données extraites et calculées sont ensuite stockées dans Elasticsearch pour permettre une analyse et une consultation rapide des informations.</li>\n
+    </ul>\n
+    <h3>Retour des notifications :</h3>\n
+    <ul>\n
+      <li><strong>200 OK :</strong> Les données ont été extraites et stockées avec succès dans Elasticsearch. Cela signifie que les informations météorologiques et les calculs associés ont été correctement traités.</li>\n
+      <li><strong>400 Bad Request :</strong> Cela se produit lorsque des informations nécessaires sont manquantes ou mal formatées. Par exemple, si l'ID de la ville est incorrect ou si l'API clé OpenWeather est invalide.</li>\n
+      <li><strong>404 Not Found :</strong> Aucun utilisateur ou aucune ville n'a été trouvée pour les critères spécifiés. Cela pourrait se produire si l'utilisateur n'a pas de ville définie dans la base de données.</li>\n
+    </ul>\n
+    <h3>Exemples de réponses :</h3>\n
+    <pre><code class=\"language-json\">{\n  \"status\": \"success\",\n  \"message\": \"Données météorologiques extraites et stockées avec succès.\"\n}</code></pre>\n
+    <h3>Notes importantes :</h3>\n
+    <ul>\n
+      <li><strong>Précisions météorologiques :</strong> Les notifications et calculs sont fortement influencés par l'exactitude des données météorologiques. Assurez-vous que les données obtenues depuis OpenWeather sont correctes et à jour.</li>\n
+      <li><strong>Gestion du stock d'eau :</strong> Le calcul de l'évapotranspiration (ETP) est utilisé pour ajuster dynamiquement le stock d'eau pour chaque ville en fonction des prévisions météo et des conditions passées.</li>\n
+      <li><strong>Personnalisation des données :</strong> Les données météorologiques sont récupérées et stockées en fonction des villes des utilisateurs, assurant que chaque utilisateur ait des informations adaptées à sa localisation.</li>\n
+    </ul>\n
+    <h3>Code source :</h3>\n
+    <pre><code class=\"language-javascript\">// Fonction pour extraire les données météorologiques et les traiter\nasync function extractWeatherData(user, retryCount) {\n  // Logique pour extraire et traiter les données météorologiques\n  // Utilisation de l'API OpenWeather, calcul de l'ETP, et stockage dans Elasticsearch\n}\n</code></pre>\n
+    <h4>Champs de l'objet de la réponse :</h4>\n
+    <ul>\n
+      <li><code>status</code> (String) : Le statut de l'opération. Par exemple, \"success\" indique que les données ont été extraites et stockées avec succès.</li>\n
+      <li><code>message</code> (String) : Un message d'accompagnement expliquant le résultat de l'opération, comme \"Données météorologiques extraites et stockées avec succès.\"</li>\n
+    </ul>\n
+    <h4>Exemple de réponse JSON :</h4>\n
+    <pre><code class=\"language-json\">{\n  \"status\": \"success\",\n  \"message\": \"Données météorologiques extraites et stockées avec succès.\"\n}</code></pre>"
+    ,"responses": {}}},
+        "notifications-tasks / index" : {"get":{
+            "tags": ["Groww-scripts-next"],
+            "summary": "notifications-tasks / index",
+            "description": "<p>Cette API est responsable de la génération et de l'envoi de notifications pour les tâches relatives aux plantes des utilisateurs. Elle se base sur les actions planifiées, les événements passés, et les conditions météorologiques actuelles pour déterminer si l'utilisateur doit être notifié. L'algorithme <strong>Groww</strong> est utilisé pour filtrer les tâches pertinentes, et celles-ci sont envoyées via des notifications push en utilisant le service Expo.</p>\n
+    <h3>Exemples d'utilisation :</h3>\n
+    <pre><code class=\"language-javascript\">const user = { id: 1, locale: \"fr\", notifications: { accepted: true, token: \"ExpoPushToken[xxx]\" }, cityId: \"city_id\" };\n\nsendNotifications(user, tasks, actions, plants, events, weather);</code></pre>\n\n
+    <h3>Explication des processus internes :</h3>\n
+    <p>Voici un aperçu détaillé du processus de génération des notifications :</p>\n
+    <ul>\n
+      <li><strong>Récupération des utilisateurs :</strong> L'API récupère tous les utilisateurs qui ont accepté de recevoir des notifications. Ces utilisateurs doivent également avoir une ville définie.</li>\n
+      <li><strong>Récupération des données pertinentes :</strong> Pour chaque utilisateur, les plantes et actions qui lui sont associées sont récupérées depuis la base de données. De plus, les données météorologiques actuelles pour la ville de l'utilisateur sont récupérées via une requête Elasticsearch.</li>\n
+      <li><strong>Génération des tâches :</strong> L'algorithme <em>Groww</em> prend en compte les plantes, les actions, les événements passés, et la météo pour générer des tâches pertinentes pour chaque utilisateur. Les tâches générées sont filtrées et priorisées pour assurer que l'utilisateur reçoive uniquement des notifications sur des tâches importantes.</li>\n
+      <li><strong>Envoi des notifications :</strong> Si des tâches pertinentes sont générées, des notifications sont créées pour chaque utilisateur. Les notifications sont envoyées via Expo à l'aide de tokens de push préalablement enregistrés pour chaque utilisateur.</li>\n
+    </ul>\n
+    <h3>Retour des notifications :</h3>\n
+    <ul>\n
+      <li><strong>200 OK :</strong> Les notifications ont été envoyées avec succès. Cela signifie que les tâches pertinentes ont été générées et que les notifications ont été transmises aux utilisateurs.</li>\n
+      <li><strong>400 Bad Request :</strong> Cela se produit lorsque des informations nécessaires sont manquantes ou mal formatées. Par exemple, si le token de notification de l'utilisateur est invalide ou si l'utilisateur n'a pas accepté de recevoir des notifications.</li>\n
+      <li><strong>404 Not Found :</strong> Aucun utilisateur ou aucune tâche n'a été trouvée pour les critères spécifiés. Cela pourrait être le cas si l'utilisateur n'a pas de ville définie ou si aucune tâche n'est associée à ses actions et événements.</li>\n
+    </ul>\n
+    <h3>Notes importantes :</h3>\n
+    <ul>\n
+      <li><strong>Conditions météorologiques :</strong> Les notifications peuvent être affectées par l'exactitude des données météorologiques. Il est essentiel que les données météorologiques soient actualisées pour garantir que les tâches sont pertinentes pour les conditions actuelles.</li>\n
+      <li><strong>Tokens de notification :</strong> Chaque utilisateur doit avoir un token valide pour que les notifications push soient envoyées. Si un token est obsolète ou invalide, la notification ne pourra pas être reçue.</li>\n
+      <li><strong>Filtrage des tâches :</strong> L'algorithme <em>Groww</em> filtre les tâches en fonction de la pertinence et de l'état des pré-conditions et post-conditions. Seules les tâches valides et urgentes sont envoyées en notification.</li>\n
+      <li><strong>Personnalisation des notifications :</strong> Les notifications sont personnalisées selon la langue de l'utilisateur. Si l'utilisateur a sélectionné le français, les messages seront envoyés en français. Sinon, les notifications seront envoyées en anglais.</li>\n
+    </ul>\n
+    <h4>Champs de l'objet de notification :</h4>\n
+    <ul>\n
+      <li><code>to</code> (String) : Le token de notification de l'utilisateur (ExpoPushToken). Ce token est unique pour chaque utilisateur et permet d'identifier où envoyer la notification.</li>\n
+      <li><code>title</code> (String) : Le titre de la notification. Il résume l'objet de la notification, par exemple \"Tâche de soins pour votre plante\".</li>\n
+      <li><code>body</code> (String) : Le contenu de la notification. Il contient une description de la tâche à accomplir, ainsi que le nombre de tâches restantes si applicable.</li>\n
+      <li><code>badge</code> (String) : Le badge indiquant le nombre de tâches en attente. Ce chiffre peut aider l'utilisateur à voir rapidement combien de tâches doivent encore être effectuées.</li>\n
+    </ul>\n
+    <h4>Exemple de réponse JSON :</h4>\n
+    <pre><code class=\"language-json\">{\n  \"tasks\": [\n    {\"task_id\": 1, \"name\": \"Arroser la plante\", \"cycle_rank\": 1, \"due_date\": \"2025-03-16\", \"status\": \"pending\"},\n    {\"task_id\": 2, \"name\": \"Vérifier la température extérieure\", \"cycle_rank\": 2, \"due_date\": \"2025-03-17\", \"status\": \"pending\"}\n  ],\n  \"status\": \"success\",\n  \"message\": \"Les tâches ont été générées et envoyées aux utilisateurs.\"\n}</code></pre>"
+    ,"responses": {}
+  
+        }},
+        "computeEarth": {
+            "x-hidden": true,
+            "get": {
+                "tags": ["Groww-algorithm"],
+                "summary": "computeEarth",
+                "description": "<p>Cette route permet de calculer la distance entre deux points sur la Terre à l'aide du service Google Maps.</p>
+    <h3>Code associé :</h3>
+    <pre><code class=\"language-javascript\">const { isBefore, parseISO } = require('date-fns');\n\n
+
+const constants = require('./constants');\n\n
+module.exports = function computeEarth(\n  
+  user_plant,\n  
+  actions,\n  
+  events,\n  
+  time_reference = new Date()\n
+) {\n  
+  const plant_events = events.filter(\n    
+    (event) => event.plant_id === user_plant.id\n  
+  );\n\n  
+  // Trier les événements par date décroissante\n  
+  plant_events.sort((a, b) => new Date(b.date) - new Date(a.date));\n\n  
+  // Extraction des derniers événements pertinents\n  
+  for (const event of plant_events) {\n    
+    const action = actions.find((a) => a.id === event.action_id);\n\n    
+    if (!action || event.skipped) {\n      
+      continue;\n    
+    }\n\n    
+    // Vérifie si l'action est autorisée pour l'événement de la plante\n    
+    if (!constants.ACTIONS_EARTH_ALLOWED.includes(action.type)) {\n      
+      continue;\n    
+    }\n\n    
+    // Vérifie si l'événement a eu lieu avant la date de référence\n    
+    if (isBefore(time_reference, parseISO(event.date))) {\n      
+      continue;\n    
+    }\n\n    
+    // Vérifie si l'action est une action de mise en terre\n    
+    return constants.ACTIONS_EARTH.includes(action.type);\n  
+  }\n\n  
+  return user_plant.earth;\n
+};</code></pre>\n\n
+    <h3>Explication du Code :</h3>\n
+    <p>Cette fonction <code>computeEarth</code> permet de déterminer si une plante a été placée en terre ou non, en fonction des événements qui lui sont associés.</p>\n\n
+    
+    <h4>Fonctionnement :</h4>\n
+    <ul>\n
+      <li>Elle filtre la liste des événements pour ne garder que ceux liés à la plante de l'utilisateur.</li>\n
+      <li>Elle trie ces événements par date décroissante pour traiter les plus récents en premier.</li>\n
+      <li>Elle parcourt les événements et récupère l'action associée à chacun.</li>\n
+      <li>Elle ignore les événements qui ne sont pas autorisés ou qui ont été sautés.</li>\n
+      <li>Elle vérifie si l'événement a eu lieu avant la date de référence.</li>\n
+      <li>Si l'action associée fait partie des actions autorisées pour marquer la plante comme étant en terre, la fonction retourne <code>true</code>.</li>\n
+      <li>Sinon, elle retourne la valeur actuelle de <code>user_plant.earth</code>.</li>\n
+    </ul>\n\n
+    
+    <h4>Paramètres :</h4>\n
+    <ul>\n
+      <li><code>user_plant</code> (Objet) : Contient les informations sur la plante de l'utilisateur.</li>\n
+      <li><code>actions</code> (Tableau) : Liste des actions disponibles avec leurs identifiants.</li>\n
+      <li><code>events</code> (Tableau) : Liste des événements passés de la plante.</li>\n
+      <li><code>time_reference</code> (Date, optionnel) : Date utilisée comme point de référence pour filtrer les événements (par défaut, la date actuelle).</li>\n
+    </ul>\n\n
+    
+    <h4>Valeur de retour :</h4>\n
+    <p>Retourne <code>true</code> si la plante est en terre, sinon retourne <code>false</code>.</p>",
+    "responses": {}
+            }
+        },
+        "computeOutside" : {
+  "get": {
+    "tags": ["Groww-algorithm"],
+    "summary": "computeOutside",
+    "description": "<p>Cette route permet d'analyser les événements d'une plante afin de déterminer si elle a été placée en extérieur.</p>\n
+    <h3>Code associé :</h3>\n
+    <pre><code class=\"language-javascript\"> const { isBefore, parseISO } = require('date-fns');\n\n
+const constants = require('./constants');\n\n
+module.exports = function computeOutside(\n  
+  user_plant,\n  
+  actions,\n  
+  events,\n  
+  time_reference = new Date()\n
+) {\n  
+  const plant_events = events.filter(\n    
+    (event) => event.plant_id === user_plant.id\n  
+  );\n\n  
+
+  // Trier les événements par date décroissante\n  
+  plant_events.sort((a, b) => parseISO(b.date) - parseISO(a.date));\n\n  
+  // Extraction des derniers événements pertinents\n  
+  for (const event of plant_events) {\n    
+    const action = actions.find((a) => a.id === event.action_id);\n\n    
+    if (!action || event.skipped) {\n      
+      continue;\n    
+    }\n\n    
+    // Vérifie si l'action est autorisée pour placer la plante en extérieur\n    
+    if (!constants.ACTIONS_OUTSIDE_ALLOWED.includes(action.type)) {\n      
+      continue;\n    
+    }\n\n    
+    // Vérifie si l'événement a eu lieu avant la date de référence\n    
+    if (isBefore(time_reference, parseISO(event.date))) {\n      
+      continue;\n    
+    }\n\n    
+    // Vérifie si l'action est une action de mise en extérieur\n    
+    return constants.ACTIONS_OUTSIDE.includes(action.type);\n  
+  }\n\n  
+  return user_plant.outside;\n
+};</code></pre>\n\n
+    <h3>Explication du Code :</h3>\n
+    <p>Cette fonction <code>computeOutside</code> permet de déterminer si une plante a été placée en extérieur en fonction des événements qui lui sont associés.</p>\n\n
+    
+    <h4>Fonctionnement :</h4>\n
+    <ul>\n
+      <li>Elle filtre la liste des événements pour ne garder que ceux liés à la plante de l'utilisateur.</li>\n
+      <li>Elle trie ces événements par date décroissante pour traiter les plus récents en premier.</li>\n
+      <li>Elle parcourt les événements et récupère l'action associée à chacun.</li>\n
+      <li>Elle ignore les événements qui ne sont pas autorisés ou qui ont été sautés.</li>\n
+      <li>Elle vérifie si l'événement a eu lieu avant la date de référence.</li>\n
+      <li>Si l'action associée fait partie des actions autorisées pour marquer la plante comme étant en extérieur, la fonction retourne <code>true</code>.</li>\n
+      <li>Sinon, elle retourne la valeur actuelle de <code>user_plant.outside</code>.</li>\n
+    </ul>\n\n
+    
+    <h4>Paramètres :</h4>\n
+    <ul>\n
+      <li><code>user_plant</code> (Objet) : Contient les informations sur la plante de l'utilisateur.</li>\n
+      <li><code>actions</code> (Tableau) : Liste des actions disponibles avec leurs identifiants.</li>\n
+      <li><code>events</code> (Tableau) : Liste des événements passés de la plante.</li>\n
+      <li><code>time_reference</code> (Date, optionnel) : Date utilisée comme point de référence pour filtrer les événements (par défaut, la date actuelle).</li>\n
+    </ul>\n\n
+    
+    <h4>Valeur de retour :</h4>\n
+    <p>Retourne <code>true</code> si la plante est en extérieur, sinon retourne <code>false</code>.</p>",
+    "responses": {}
+  }
+        },
+    "compute":{
+        "get": {
+            "tags": ["Groww-algorithm"],
+            "summary": "compute",
+            "description": "<p>Cette route permet de calculer les tâches de plantation d'une plante en fonction des actions, des événements et des conditions météorologiques.</p>\n
+    <h3>Code associé :</h3>\n
+    <pre><code class=\"language-javascript\">const { startOfDay } = require('date-fns');\n\n
+const constants = require('./constants');\n\n
+const getTasks = require('./tasks');\n\n
+module.exports = function computeTaks(\n  
+  actions = [],\n  
+  plants = [],\n  
+  user_plants = [],\n  
+  events = [],\n  
+  weather = {},\n  
+  reverse = false,\n  
+  time_reference = new Date()\n
+) {\n  
+  if (!Array.isArray(actions)) {\n    
+    actions = Object.values(actions);\n  
+  }\n\n  
+  if (!Array.isArray(plants)) {\n    
+    plants = Object.values(plants);\n  
+  }\n\n  
+  if (!Array.isArray(user_plants)) {\n    
+    user_plants = Object.values(user_plants);\n  
+  }\n\n  
+  if (!Array.isArray(events)) {\n    
+    events = Object.values(events);\n  
+  }\n\n  
+  time_reference = startOfDay(time_reference);\n\n  
+  if (!weather.etp) {\n    
+    weather.etp = constants.ETP_REFERENCE;\n  
+  }\n\n  
+  if (!weather.data) {\n    
+    weather.data = [];\n  
+  }\n\n  
+  let tasks = [];\n\n  
+  user_plants.forEach((user_plant) => {\n    
+    if (!user_plant || user_plant.dont_follow_tasks || user_plant.deleted) {\n      
+      return;\n    
+    }\n\n    
+    const plant = plants.find(\n      
+      (plant) => plant.visible && plant.id === user_plant.plant_id\n    
+    );\n\n    
+    if (!plant) {\n      
+      return;\n    
+    }\n\n    
+    const plant_events = events.filter(\n      
+      (event) => event.plant_id === user_plant.id && !event.deleted\n    
+    );\n\n    
+    const plant_actions = actions\n
+      .map((action) => {\n        
+        if (!action.visible) {\n          
+          return;\n        
+        }\n\n        
+        const action_plant = plant.actions.find(\n          
+          (action_plant) => action.id === action_plant.id\n        
+        );\n\n        
+        const action_final = {};\n\n        
+        action_final.id = action.id;\n        
+        action_final.type = action.type;\n        
+        action_final.at_start = action.at_start || false;\n        
+        action_final.at_end = action.at_end || false;\n        
+        action_final.in_plant = !!action_plant;\n\n        
+        if (action_final.in_plant) {\n          
+          action_final.todos =\n            
+            ((action_plant && action_plant.todos) || []).filter(\n              
+              (todo) => todo.visible\n            
+            ) || [];\n        
+        }\n\n        
+        return action_final;\n      
+      })\n
+      .filter((action) => !!action);\n\n  
+    tasks = tasks.concat(\n      
+      getTasks(\n        
+        user_plant,\n        
+        plant,\n        
+        plant_actions,\n        
+        plant_events,\n        
+        weather,\n        
+        reverse,\n        
+        time_reference\n      
+      )\n    
+    );\n  
+  });\n\n  
+  return tasks;\n
+};</code></pre>\n\n
+    <h3>Explication du Code :</h3>\n
+    <p>Cette fonction <code>computeTaks</code> calcule les tâches de plantation d'une plante en fonction des événements, des actions et des conditions météorologiques.</p>\n\n
+    
+    <h4>Fonctionnement :</h4>\n
+    <ul>\n
+      <li>Elle commence par vérifier et convertir les paramètres en tableaux si nécessaire.</li>\n
+      <li>Elle récupère les données météorologiques, y compris l'ETP (Évapotranspiration) et les précipitations.</li>\n
+      <li>Elle parcourt les plantes de l'utilisateur et filtre les événements associés à chaque plante.</li>\n
+      <li>Elle associe les actions disponibles aux plantes et les filtre selon leur visibilité et pertinence.</li>\n
+      <li>Elle génère une liste de tâches via la fonction <code>getTasks</code>, qui est ensuite retournée.</li>\n
+    </ul>\n\n
+    
+    <h4>Paramètres :</h4>\n
+    <ul>\n
+      <li><code>actions</code> (Tableau ou Objet) : Liste des actions disponibles (ou un objet à convertir en tableau).</li>\n
+      <li><code>plants</code> (Tableau ou Objet) : Liste des plantes disponibles (ou un objet à convertir en tableau).</li>\n
+      <li><code>user_plants</code> (Tableau ou Objet) : Liste des plantes de l'utilisateur (ou un objet à convertir en tableau).</li>\n
+      <li><code>events</code> (Tableau ou Objet) : Liste des événements associés aux plantes (ou un objet à convertir en tableau).</li>\n
+      <li><code>weather</code> (Objet) : Objet contenant les données météorologiques, dont l'ETP et les précipitations.</li>\n
+      <li><code>reverse</code> (Boolean) : Si <code>true</code>, inverse l'ordre des tâches générées.</li>\n
+      <li><code>time_reference</code> (Date) : Date de référence à partir de laquelle les événements sont considérés (par défaut, la date actuelle).</li>\n
+    </ul>\n\n
+    
+    <h4>Valeur de retour :</h4>\n
+    <p>Retourne un tableau de tâches à effectuer pour la plante en fonction des événements, des actions et des conditions météorologiques.</p>",
+    "responses": {}
+}},
+        "post-conditions":{"get": {
+    "tags": ["Groww-algorithm"],
+    "summary": "post-conditions",
+    "description": "<p>Cette route permet de vérifier les conditions de la tâche avant de l'exécuter en fonction des événements passés et de la date de référence.</p>\n
+    <h3>Code associé :</h3>\n
+    <pre><code class=\"language-javascript\">const {\n  startOfDay,\n  differenceInMonths,\n  differenceInYears,\n  parseISO,\n} = require('date-fns');\n\n
+module.exports = function postConditions(\n  todo,\n  user_plant,\n  at_start_event,\n  task,\n  time_reference = new Date()\n) {\n  
+  if (!task) {\n    
+    return false;\n  
+  }\n\n  
+  if (!todo.conditions || todo.conditions.length === 0) {\n    
+    return true;\n  
+  }\n\n  
+  for (const condition of todo.conditions) {\n    
+    let delta;\n\n    
+    switch (condition) {\n      
+      case 'firstMonth':\n        
+        if (!at_start_event) {\n          
+          return false;\n        
+        }\n\n        
+        delta =\n          
+          at_start_event.date &&\n          
+          differenceInMonths(\n            
+            time_reference,\n            
+            startOfDay(parseISO(at_start_event.date))\n          
+          );\n\n        
+        if (delta !== 0) {\n          
+          return false;\n        
+        }\n        
+        break;\n\n      
+      case 'firstYear':\n        
+        if (!at_start_event) {\n          
+          return false;\n        
+        }\n\n        
+        delta =\n          
+          at_start_event.date &&\n          
+          differenceInYears(\n            
+            time_reference,\n            
+            startOfDay(parseISO(at_start_event.date))\n          
+          );\n\n        
+        if (delta !== 0) {\n          
+          return false;\n        
+        }\n        
+        break;\n\n      
+      default:\n        
+        break;\n    
+    }\n  
+  }\n\n  
+  return true;\n};</code></pre>\n\n
+    <h3>Explication du Code :</h3>\n
+    <p>La fonction <code>postConditions</code> vérifie si une tâche peut être effectuée en fonction de certaines conditions liées à l'événement de début et à la date de référence.</p>\n\n
+    
+    <h4>Fonctionnement :</h4>\n
+    <ul>\n
+      <li>Elle vérifie d'abord si la tâche est définie.</li>\n
+      <li>Ensuite, elle s'assure que des conditions sont définies dans la tâche.</li>\n
+      <li>Pour chaque condition, elle vérifie si la date de début de l'événement respecte la condition (mois ou année).</li>\n
+      <li>Si la condition est respectée, elle retourne <code>true</code>, sinon elle retourne <code>false</code>.</li>\n
+    </ul>\n\n
+    
+    <h4>Paramètres :</h4>\n
+    <ul>\n
+      <li><code>todo</code> (Objet) : L'objet contenant les informations de la tâche à vérifier, y compris les conditions associées.</li>\n
+      <li><code>user_plant</code> (Objet) : L'objet représentant la plante de l'utilisateur.</li>\n
+      <li><code>at_start_event</code> (Objet) : L'objet représentant l'événement au début de la tâche (contient la date de l'événement).</li>\n
+      <li><code>task</code> (Objet) : L'objet de la tâche à vérifier.</li>\n
+      <li><code>time_reference</code> (Date) : La date de référence utilisée pour la comparaison des conditions (par défaut, la date actuelle).</li>\n
+    </ul>\n\n
+    
+    <h4>Valeur de retour :</h4>\n
+    <p>Retourne <code>true</code> si toutes les conditions sont remplies, sinon retourne <code>false</code>.</p>",
+    "responses": {}
+  }},
+        "pre-conditions":{"get": {
+    "tags": ["Groww-algorithm"],
+    "summary": "pre-conditions",
+    "description": "<p>Cette route permet de vérifier les conditions préalables qu'une tâche doit remplir avant de pouvoir être exécutée sur une plante en fonction de son état.</p>\n
+    <h3>Code associé :</h3>\n
+    <pre><code class=\"language-javascript\">module.exports = function preConditions(\n  todo,\n  user_plant,\n  actions,\n  events,\n  time_reference = new Date()\n) {\n  
+  if (!todo.conditions || todo.conditions.length === 0) {\n    
+    return true;\n  }\n\n  
+  for (const condition of todo.conditions) {\n    
+    switch (condition) {\n      
+      case 'inside':\n        
+        if (user_plant.outside) {\n          
+          return false;\n        
+        }\n        
+        break;\n      
+      case 'outside':\n        
+        if (!user_plant.outside) {\n          
+          return false;\n        
+        }\n        
+        break;\n      
+      case 'pot':\n        
+        if (user_plant.earth) {\n          
+          return false;\n        
+        }\n        
+        break;\n      
+      case 'earth':\n        
+        if (!user_plant.earth) {\n          
+          return false;\n        
+        }\n        
+        break;\n      
+      case 'onDryAlert':\n        
+        return false;\n      
+      case 'onNotifSent':\n        
+        return false;\n      
+      default:\n        
+        break;\n    
+    }\n  }\n\n  
+  return true;\n};</code></pre>\n\n
+    <h3>Explication du Code :</h3>\n
+    <p>La fonction <code>preConditions</code> vérifie si les conditions préalables sont remplies avant d'exécuter une tâche sur une plante. Elle prend en compte l'état de la plante (à l'intérieur ou à l'extérieur, dans un pot ou en terre, etc.) et les conditions définies dans la tâche.</p>\n\n
+    
+    <h4>Fonctionnement :</h4>\n
+    <ul>\n
+      <li>La fonction parcourt les conditions définies dans la tâche (par exemple : 'inside', 'outside', 'pot', etc.).</li>\n
+      <li>Pour chaque condition, elle vérifie si l'état actuel de la plante (par exemple, si elle est à l'extérieur, dans un pot, etc.) correspond à la condition de la tâche.</li>\n
+      <li>Si une condition n'est pas remplie, la fonction retourne <code>false</code>, ce qui signifie que la tâche ne peut pas être effectuée.</li>\n
+      <li>Si toutes les conditions sont remplies, la fonction retourne <code>true</code>, et la tâche peut être exécutée.</li>\n
+    </ul>\n\n
+    
+    <h4>Paramètres :</h4>\n
+    <ul>\n
+      <li><code>todo</code> (Objet) : L'objet contenant les informations de la tâche à vérifier, y compris les conditions associées.</li>\n
+      <li><code>user_plant</code> (Objet) : L'objet représentant la plante de l'utilisateur, avec des propriétés comme <code>outside</code> (indique si la plante est à l'extérieur) et <code>earth</code> (indique si la plante est en terre).</li>\n
+      <li><code>actions</code> (Tableau) : Un tableau des actions disponibles pour l'utilisateur.</li>\n
+      <li><code>events</code> (Tableau) : Un tableau des événements associés à l'utilisateur.</li>\n
+      <li><code>time_reference</code> (Date) : La date de référence utilisée pour la comparaison des conditions (par défaut, la date actuelle).</li>\n
+    </ul>\n\n
+    
+    <h4>Valeur de retour :</h4>\n
+    <p>Retourne <code>true</code> si toutes les conditions sont remplies, sinon retourne <code>false</code>.</p>",
+    "responses": {}
+  }},
+        "":{"get": {
+    "tags": ["Groww-algorithm"],
+    "summary": "tasks-for-at-start",
+    "description": "<p>Cette route permet de générer une tâche qui doit être effectuée au début du mois, en tenant compte des dates de due_date définies dans la tâche. Si la due_date pour le mois actuel est définie comme '0', la fonction recherche la prochaine date disponible pour la tâche.</p>\n
+    <h3>Code associé :</h3>\n
+    <pre><code class=\"language-javascript\">const { startOfDay, startOfMonth, addMonths } = require('date-fns');\n\nmodule.exports = function tasksForAtStart(\n  todo,\n  user_plant,\n  plant,\n  actions,\n  weather,\n  time_reference = new Date()\n) {\n  
+  let task_date = startOfDay(time_reference);\n  
+  const task_month = time_reference.getMonth();\n\n  
+  // Tache en dehors de la due_date\n  
+  if (todo.due_date && todo.due_date[task_month] === '0') {\n    
+    // On recherche la prochaine date\n    
+    for (let month_delta = 0; month_delta < 12; month_delta += 1) {\n      
+      if (\n        
+        todo.due_date &&\n        
+        todo.due_date[(task_month + month_delta) % 12] === '1'\n      
+      ) {\n        
+        task_date = startOfMonth(addMonths(task_date, month_delta));\n        
+        break;\n      
+      }\n    
+    }\n  }\n\n  
+  const task = {\n    
+    action_id: todo.action_id,\n    
+    todo,\n    
+    date: task_date,\n  
+  };\n\n  
+  return task;\n};</code></pre>\n\n
+    <h3>Explication du Code :</h3>\n
+    <p>La fonction <code>tasksForAtStart</code> génère une tâche en fonction de la date de début du mois et de la gestion de la date de <code>due_date</code> (date limite de la tâche). Si la date limite pour le mois en cours est '0', elle cherche la première date valide dans les mois suivants.</p>\n\n
+    
+    <h4>Fonctionnement :</h4>\n
+    <ul>\n
+      <li>La fonction commence par obtenir la date du jour et détermine le mois actuel.</li>\n
+      <li>Si la <code>due_date</code> pour ce mois est '0', elle recherche la prochaine <code>due_date</code> dans les mois suivants.</li>\n
+      <li>La fonction retourne la première date disponible pour effectuer la tâche, qui sera au début du mois trouvé.</li>\n
+    </ul>\n\n
+    
+    <h4>Paramètres :</h4>\n
+    <ul>\n
+      <li><code>todo</code> (Objet) : L'objet contenant les informations de la tâche, y compris la <code>due_date</code> pour chaque mois.</li>\n
+      <li><code>user_plant</code> (Objet) : L'objet représentant la plante de l'utilisateur (pas directement utilisé ici, mais pourrait être utilisé dans une version étendue).</li>\n
+      <li><code>plant</code> (Objet) : L'objet représentant la plante (non utilisé dans cette version, mais est inclus pour la structure).</li>\n
+      <li><code>actions</code> (Tableau) : Un tableau des actions associées à la tâche.</li>\n
+      <li><code>weather</code> (Objet) : Les données météorologiques associées à la tâche (non utilisé dans cette version).</li>\n
+      <li><code>time_reference</code> (Date) : La date de référence utilisée pour déterminer le mois actuel (par défaut, la date actuelle).</li>\n
+    </ul>\n\n
+    
+    <h4>Valeur de retour :</h4>\n
+    <p>Retourne un objet représentant la tâche, avec l'ID de l'action, la tâche elle-même et la date calculée pour effectuer cette tâche.</p>",
+    "responses": {}
+  }},
+        "tasks-from-last-event":{"get": {
+    "tags": ["Groww-algorithm"],
+    "summary": "tasks-from-last-event",
+    "description": "<p>Cette route permet de générer une tâche à partir du dernier événement effectué pour une plante donnée. La génération de la tâche tient compte des dates de déclenchement minimales et maximales, ainsi que des conditions météorologiques (comme les précipitations et la température).</p>\n
+    <h3>Code associé :</h3>\n
+    <pre><code class=\"language-javascript\">const {\n  isSameDay,\n  isAfter,\n  isBefore,\n  isValid,\n  startOfDay,\n  startOfMonth,\n  addDays,\n  addMonths,\n  parseISO,\n} = require('date-fns');\n\nconst constants = require('./constants');\n\n// Taches en cycle_rank = 0\nmodule.exports = function tasksFromLastEvent(\n  todo,\n  last_event,\n  user_plant,\n  plant,\n  actions,\n  weather,\n  time_reference = new Date()\n) {\n  if (!last_event) {\n    return;\n  }\n\n  const last_event_date = isValid(last_event.date)\n    ? last_event.date\n    : parseISO(last_event.date);\n\n  const action = actions.find((a) => a.id === todo.action_id);\n\n  let etp = constants.ETP_REFERENCE;\n  let { trigger_min } = todo;\n  const { trigger_max } = todo;\n\n  // On filtre les arrosages\n  if (action.type === 'WATER') {\n    etp = Math.max(\n      weather.etp,\n      !user_plant.outside ? constants.ETP_REFERENCE : 0\n    );\n\n    trigger_min = Math.round(\n      Math.max(1, (trigger_min * constants.ETP_REFERENCE) / etp)\n    );\n  }\n\n  let task_date_min = addDays(startOfDay(last_event_date), trigger_min);\n  const task_date_max = addDays(startOfDay(last_event_date), trigger_max);\n\n  if (user_plant.outside && action.type === 'WATER') {\n    let data;\n    const threshold =\n      plant.threshold + (user_plant.earth ? 0 : constants.DELTA_POT);\n\n    if (isBefore(task_date_min, time_reference)) {\n      task_date_min = startOfDay(new Date(time_reference));\n    }\n\n    do {\n      data = weather.data.find((value) => isSameDay(task_date_min, value.date));\n\n      if (data && data.water_stock > threshold) {\n        task_date_min = addDays(task_date_min, 1);\n        continue;\n      }\n\n      if (data && data.rain > etp + 1) {\n        task_date_min = addDays(task_date_min, 1);\n        continue;\n      }\n\n      break;\n    } while (data);\n  } else if (\n    (weather.data || []).length === 0 &&\n    (action.type === 'PROTECT' ||\n      action.type === 'GETINSIDE' ||\n      action.type === 'PUTOUTSIDE')\n  ) {\n    return;\n  } else if (\n    action.type === 'PROTECT' ||\n    action.type === 'GETINSIDE' ||\n    action.type === 'PUTOUTSIDE'\n  ) {\n    if (isAfter(task_date_min, time_reference)) {\n      return;\n    }\n\n    const threshold = constants.RUSTICITY[plant.rusticity_zone];\n\n    switch (action.type) {\n      case 'PUTOUTSIDE':\n        if (threshold + constants.DELTA_RUSTICITY_MAX > weather.temp_min) {\n          return;\n        }\n        break;\n      case 'PROTECT':\n      case 'GETINSIDE':\n        if (threshold + constants.DELTA_RUSTICITY_MIN < weather.temp_min) {\n          return;\n        }\n        break;\n      default:\n        break;\n    }\n\n    task_date_min = startOfDay(new Date(time_reference));\n  }\n\n  const task_month = task_date_min.getMonth();\n\n  if (todo.due_date && todo.due_date[task_month] === '0') {\n    if (todo.cycle_rank !== 0) {\n      return;\n    }\n\n    // On recherche la prochaine date\n    for (let month_delta = 0; month_delta < 12; month_delta += 1) {\n      if (\n        todo.due_date &&\n        todo.due_date[(task_month + month_delta) % 12] === '1'\n      ) {\n        task_date_min = startOfMonth(addMonths(task_date_min, month_delta));\n        break;\n      }\n    }\n  }\n\n  if (\n    isAfter(task_date_max, task_date_min) &&\n    isAfter(task_date_max, time_reference)\n  ) {\n    return;\n  }\n\n  if (isBefore(task_date_min, time_reference)) {\n    const reference_month = time_reference.getMonth();\n\n    if (todo.due_date && todo.due_date[reference_month] === '0') {\n      return;\n    }\n  }\n\n  const task = {\n    action_id: todo.action_id,\n    todo,\n    date: task_date_min,\n  };\n\n  if (todo.cycle_rank === 0 && isSameDay(time_reference, last_event_date)) {\n    return;\n  }\n\n  if (task.action_id === last_event.action_id) {\n    task.last_event = last_event;\n  }\n\n  return task;\n};</code></pre>\n\n
+    <h3>Explication du Code :</h3>\n
+    <p>La fonction <code>tasksFromLastEvent</code> génère une tâche basée sur les événements passés et les conditions actuelles de la plante. Elle prend en compte les conditions de déclenchement liées à la date de l'événement précédent, les dates minimales et maximales pour chaque tâche, ainsi que les conditions climatiques actuelles.</p>\n\n
+    
+    <h4>Fonctionnement :</h4>\n
+    <ul>\n
+      <li>La fonction commence par vérifier si l'événement précédent existe et est valide.</li>\n
+      <li>Elle ajuste la tâche en fonction des données météorologiques, comme les précipitations et les températures minimales et maximales.</li>\n
+      <li>Elle applique des règles spécifiques pour différents types d'actions (par exemple, \"WATER\", \"PROTECT\", \"PUTOUTSIDE\", etc.).</li>\n
+      <li>Si la tâche dépasse les limites de déclenchement, elle passe à l'action suivante. Sinon, elle retourne la tâche générée avec les détails appropriés.</li>\n
+    </ul>\n\n
+    
+    <h4>Paramètres :</h4>\n
+    <ul>\n
+      <li><code>todo</code> (Objet) : L'objet contenant les informations de la tâche, y compris la <code>due_date</code> et les conditions de déclenchement (min et max).</li>\n
+      <li><code>last_event</code> (Objet) : L'objet représentant le dernier événement effectué pour la plante.</li>\n
+      <li><code>user_plant</code> (Objet) : L'objet représentant la plante de l'utilisateur.</li>\n
+      <li><code>plant</code> (Objet) : L'objet représentant la plante avec des informations supplémentaires, comme la zone de rusticité.</li>\n
+      <li><code>actions</code> (Tableau) : Un tableau des actions associées à la tâche.</li>\n
+      <li><code>weather</code> (Objet) : Les données météorologiques, y compris les températures minimales, les précipitations, et les stocks d'eau disponibles.</li>\n
+      <li><code>time_reference</code> (Date) : La date de référence utilisée pour déterminer les dates minimales et maximales pour effectuer la tâche.</li>\n
+    </ul>\n\n
+    
+    <h4>Valeur de retour :</h4>\n
+    <p>Retourne un objet représentant la tâche, avec l'ID de l'action, la tâche elle-même et la date calculée pour effectuer cette tâche. Si les conditions ne sont pas remplies, la fonction retourne <code>undefined</code>.</p>",
+    "responses": {}
+  }},
+        "tasks":{"get": {
+    "tags": ["Groww-algorithm"],
+    "summary": "tasks",
+    "description": "<p>Cette route permet de générer une liste de tâches à partir des événements passés et des actions à effectuer pour une plante. Elle tient compte des pré-conditions, des post-conditions et des conditions météorologiques pour chaque tâche.</p>\n
+    <h3>Code associé :</h3>\n
+    <pre><code class=\"language-javascript\">const { isValid, parseISO } = require('date-fns');\n\nconst computeOutside = require('./compute-outside');\nconst computeEarth = require('./compute-earth');\nconst hasValidPreCondition = require('./pre-conditions');\nconst hasValidPostCondition = require('./post-conditions');\nconst getTaskFromLastEvent = require('./tasks-from-last-event');\nconst getTaskForAtStart = require('./tasks-for-at-start');\n\nfunction filterTasks(tasks, min_cycle_rank = 1000) {\n  const unique_actions = {};\n\n  // Filtre par action_id (unique) et par rank_cycle\n  return tasks\n    .sort((a, b) => a.date - b.date)\n    .filter((task) => {\n      if (task.action_id in unique_actions) {\n        return false;\n      }\n\n      if (task.cycle_rank > min_cycle_rank) {\n        return false;\n      }\n\n      unique_actions[task.action_id] = true;\n\n      return true;\n    });\n}\n\nmodule.exports = function getTasks(\n  user_plant,\n  plant,\n  actions,\n  events,\n  weather,\n  reverse = false,\n  time_reference = new Date()\n) {\n  const tasks = [];\n  const todos = [];\n  const todos_at_start = [];\n  const todos_ordered_by_cycle_rank = [];\n  const last_event_by_action_id = {};\n  let min_cycle_rank = 1000;\n  let at_start_event;\n\n  // Sort events\n  events.sort((a, b) => {\n    const a_date = isValid(a.date) ? a.date : parseISO(a.date);\n    const b_date = isValid(b.date) ? b.date : parseISO(b.date);\n\n    return b_date - a_date;\n  });\n\n  let has_ended = false;\n\n  // Extraction des derniers événements par action_id\n  // Extraction des at_start et todos hors cycle_rank\n  actions.forEach((action) => {\n    const last_event = events.find((event) => event.action_id === action.id);\n\n    if (last_event) {\n      if (action.at_end) {\n        has_ended = true;\n        return;\n      }\n\n      if (action.at_start) {\n        at_start_event = at_start_event || last_event;\n      }\n\n      last_event_by_action_id[action.id] = last_event;\n    }\n\n    if (!action.in_plant) {\n      return;\n    }\n\n    action.todos.forEach((todo) => {\n      todo.action_id = action.id;\n\n      if (reverse) {\n        const start_of_year = todo.due_date.substring(0, 6);\n        const end_of_year = todo.due_date.substring(6, 12);\n\n        todo.due_date = end_of_year + start_of_year;\n      }\n\n      if (todo.cycle_rank !== 0) {\n        todos_ordered_by_cycle_rank.push(todo);\n      }\n\n      if (action.at_start) {\n        todos_at_start.push(todo);\n        return;\n      }\n\n      todos.push(todo);\n    });\n  });\n\n  if (has_ended) {\n    return [];\n  }\n\n  if (events.length === 0) {\n    todos_at_start.forEach((todo) => {\n      if (user_plant.id_action && user_plant.id_action !== todo.action_id) {\n        return;\n      }\n\n      if (\n        !hasValidPreCondition(todo, user_plant, actions, events, time_reference)\n      ) {\n        return;\n      }\n\n      const task = getTaskForAtStart(\n        todo,\n        user_plant,\n        plant,\n        actions,\n        weather,\n        time_reference\n      );\n\n      if (task) {\n        task.plant_id = user_plant.id;\n\n        tasks.push(task);\n      }\n    });\n\n    return filterTasks(tasks);\n  }\n\n  // Sort todos\n  todos_ordered_by_cycle_rank.sort((a, b) => a.cycle_rank - b.cycle_rank);\n\n  user_plant.outside = computeOutside(\n    user_plant,\n    actions,\n    events,\n    time_reference\n  );\n  user_plant.earth = computeEarth(user_plant, actions, events, time_reference);\n\n  // Calcul des taches par todo\n  todos.forEach((todo) => {\n    if (\n      !hasValidPreCondition(todo, user_plant, actions, events, time_reference)\n    ) {\n      return;\n    }\n\n    let last_event = last_event_by_action_id[todo.action_id];\n\n    if (last_event && todo.cycle_rank !== 0) {\n      return;\n    }\n\n    if (!last_event && todo.cycle_rank === 0) {\n      last_event = at_start_event;\n    }\n\n    if (!last_event && todo.cycle_rank !== 0) {\n      let counter = 0;\n\n      while (!last_event && counter < 100) {\n        counter += 1;\n\n        const last_todo = todos_ordered_by_cycle_rank.find(\n          (todo_ordered) =>\n            todo_ordered.cycle_rank === todo.cycle_rank - counter\n        );\n\n        if (!last_todo) {\n          continue;\n        }\n\n        last_event = events.find(\n          (event) => event.action_id === last_todo.action_id\n        );\n      }\n    }\n\n    const task = getTaskFromLastEvent(\n      todo,\n      last_event,\n      user_plant,\n      plant,\n      actions,\n      weather,\n      time_reference\n    );\n\n    if (\n      !hasValidPostCondition(\n        todo,\n        user_plant,\n        at_start_event,\n        task,\n        time_reference\n      )\n    ) {\n      return;\n    }\n\n    if (todo.cycle_rank !== 0) {\n      min_cycle_rank = Math.min(min_cycle_rank, todo.cycle_rank);\n    }\n\n    task.plant_id = user_plant.id;\n    task.cycle_rank = todo.cycle_rank;\n\n    tasks.push(task);\n  });\n\n  return filterTasks(tasks, min_cycle_rank);\n};</code></pre>\n\n
+    <h3>Explication du Code :</h3>\n
+    <p>La fonction <code>getTasks</code> génère des tâches basées sur les événements et les actions disponibles pour une plante. Elle vérifie les pré-conditions et les post-conditions pour chaque tâche et les trie selon les priorités du cycle des actions.</p>\n\n
+    <h4>Fonctionnement :</h4>\n
+    <ul>\n
+      <li>Les événements sont triés par date pour déterminer l'ordre des tâches.</li>\n
+      <li>Les tâches sont calculées à partir des actions et des pré-conditions, et sont filtrées en fonction des conditions des plantes.</li>\n
+      <li>Les tâches sont générées en tenant compte des événements passés, des tâches qui doivent être effectuées au début, et des conditions climatiques comme l'extérieur et la terre.</li>\n
+    </ul>\n\n
+    <h4>Paramètres :</h4>\n
+    <ul>\n
+      <li><code>user_plant</code> (Objet) : L'objet représentant la plante de l'utilisateur.</li>\n
+      <li><code>plant</code> (Objet) : L'objet représentant la plante avec des informations supplémentaires.</li>\n
+      <li><code>actions</code> (Tableau) : Un tableau des actions associées à la plante.</li>\n
+      <li><code>events</code> (Tableau) : Un tableau des événements passés pour cette plante.</li>\n
+      <li><code>weather</code> (Objet) : Les données météorologiques actuelles.</li>\n
+      <li><code>reverse</code> (Boolean) : Un indicateur pour inverser l'ordre des tâches.</li>\n
+      <li><code>time_reference</code> (Date) : La date de référence utilisée pour déterminer l'ordre des tâches.</li>\n
+    </ul>\n\n
+    <h4>Retour :</h4>\n
+    <p>Une liste de tâches calculées pour la plante en fonction des critères spécifiés.</p>","responses": {}
+  },
+  },
+      "/actions": {
+        "get": {
+          "tags": ["Groww-api-next"],
+          "summary": "Récupérer la liste des actions",
+          "description": "Cette route permet de récupérer une liste d'actions selon les paramètres de pagination et de filtrage.",
+          "parameters": [
+            {
+              "name": "page",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "example": 1
+              },
+              "description": "Le numéro de la page à récupérer."
+            },
+            {
+              "name": "pageSize",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "example": 10
+              },
+              "description": "Le nombre d'actions par page."
+            },
+            {
+              "name": "plantId",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "string",
+                "example": "12345"
+              },
+              "description": "Filtre optionnel pour récupérer les actions d'une plante spécifique."
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Liste des actions récupérée avec succès",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "metadata": {
+                        "type": "object",
+                        "properties": {
+                          "pagination": {
+                            "type": "object",
+                            "properties": {
+                              "page": {
+                                "type": "integer"
+                              },
+                              "pageSize": {
+                                "type": "integer"
+                              },
+                              "pageCount": {
+                                "type": "integer"
+                              },
+                              "total": {
+                                "type": "integer"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "results": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "label": {
+                              "type": "string"
+                            },
+                            "title": {
+                              "type": "string"
+                            },
+                            "adjectival": {
+                              "type": "string"
+                            },
+                            "callToAction": {
+                              "type": "string"
+                            },
+                            "notify": {
+                              "type": "boolean"
+                            },
+                            "diary": {
+                              "type": "string"
+                            },
+                            "conditions": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Erreur de validation des paramètres"
+            },
+            "500": {
+              "description": "Erreur interne du serveur"
+            }
+          }
+        }
+      },
+      "/actions/{id}": {
+        "get": {
+          "tags": ["Groww-api-next"],
+          "summary": "Récupérer une action par son ID",
+          "description": "Cette route permet de récupérer les détails d'une action spécifique via son identifiant unique.",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "example": "12345"
+              },
+              "description": "ID de l'action à récupérer."
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Action récupérée avec succès",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "label": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "adjectival": {
+                        "type": "string"
+                      },
+                      "callToAction": {
+                        "type": "string"
+                      },
+                      "notify": {
+                        "type": "boolean"
+                      },
+                      "diary": {
+                        "type": "string"
+                      },
+                      "conditions": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Action non trouvée"
+            },
+            "500": {
+              "description": "Erreur interne du serveur"
+            }
+          }
+        }
+      },
+      "/categories": {
+      "get": {
+        "tags": ["Groww-api-next"],
+        "summary": "Récupérer la liste des catégories",
+        "description": "Cette route permet de récupérer une liste de catégories selon les paramètres de pagination.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            },
+            "description": "Le numéro de la page à récupérer."
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 10
+            },
+            "description": "Le nombre de catégories par page."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des catégories récupérée avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "pagination": {
+                          "type": "object",
+                          "properties": {
+                            "page": {
+                              "type": "integer"
+                            },
+                            "pageSize": {
+                              "type": "integer"
+                            },
+                            "pageCount": {
+                              "type": "integer"
+                            },
+                            "total": {
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "label": {
+                            "type": "string"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "callToAction": {
+                            "type": "string"
+                          },
+                          "picture": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erreur de validation des paramètres"
+          },
+          "500": {
+            "description": "Erreur interne du serveur"
+          }
+        }
+      }
+        },
+        "/categories/{id}": {
+      "get": {
+        "tags": ["Groww-api-next"],
+        "summary": "Récupérer une catégorie par son ID",
+        "description": "Cette route permet de récupérer les détails d'une catégorie spécifique via son identifiant unique.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "12345"
+            },
+            "description": "ID de la catégorie à récupérer."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Catégorie récupérée avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "label": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "callToAction": {
+                      "type": "string"
+                    },
+                    "picture": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Catégorie non trouvée"
+          },
+          "500": {
+            "description": "Erreur interne du serveur"
+          }
+        }
+      }
+        },
+    "/cities": {
+      "get": {
+        "tags": ["Groww-api-next"],
+        "summary": "Récupérer la liste des villes",
+        "description": "Cette route permet de récupérer une liste de villes selon les paramètres de pagination et de filtrage.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            },
+            "description": "Le numéro de la page à récupérer."
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 10
+            },
+            "description": "Le nombre de villes par page."
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "Paris"
+            },
+            "description": "Filtrer par nom de la ville."
+          },
+          {
+            "name": "country",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "France"
+            },
+            "description": "Filtrer par pays."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des villes récupérée avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "pagination": {
+                          "type": "object",
+                          "properties": {
+                            "page": {
+                              "type": "integer"
+                            },
+                            "pageSize": {
+                              "type": "integer"
+                            },
+                            "pageCount": {
+                              "type": "integer"
+                            },
+                            "total": {
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "simpleName": {
+                            "type": "string"
+                          },
+                          "realName": {
+                            "type": "string"
+                          },
+                          "country": {
+                            "type": "string"
+                          },
+                          "department": {
+                            "type": "string"
+                          },
+                          "postalCode": {
+                            "type": "string"
+                          },
+                          "position": {
+                            "type": "object",
+                            "properties": {
+                              "coordinates": {
+                                "type": "array",
+                                "items": {
+                                  "type": "number"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erreur de validation des paramètres"
+          },
+          "500": {
+            "description": "Erreur interne du serveur"
+          }
+        }
+      }
+    },
+    "/cities/{id}": {
+      "get": {
+        "tags": ["Groww-api-next"],
+        "summary": "Récupérer une ville par son ID",
+        "description": "Cette route permet de récupérer les détails d'une ville spécifique via son identifiant unique.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "abc123"
+            },
+            "description": "ID de la ville à récupérer."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ville récupérée avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "simpleName": {
+                      "type": "string"
+                    },
+                    "realName": {
+                      "type": "string"
+                    },
+                    "country": {
+                      "type": "string"
+                    },
+                    "department": {
+                      "type": "string"
+                    },
+                    "postalCode": {
+                      "type": "string"
+                    },
+                    "position": {
+                      "type": "object",
+                      "properties": {
+                        "coordinates": {
+                          "type": "array",
+                          "items": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ville non trouvée"
+          },
+          "500": {
+            "description": "Erreur interne du serveur"
+          }
+        }
+      }
+    },
+    "/countries": {
+      "get": {
+        "tags": ["Groww-api-next"],
+        "summary": "Récupérer la liste des pays",
+        "description": "Cette route permet de récupérer une liste de pays selon les paramètres de pagination et de filtrage.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            },
+            "description": "Le numéro de la page à récupérer."
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 10
+            },
+            "description": "Le nombre de pays par page."
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "France"
+            },
+            "description": "Filtrer par nom du pays."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des pays récupérée avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "pagination": {
+                          "type": "object",
+                          "properties": {
+                            "page": {
+                              "type": "integer"
+                            },
+                            "pageSize": {
+                              "type": "integer"
+                            },
+                            "pageCount": {
+                              "type": "integer"
+                            },
+                            "total": {
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erreur de validation des paramètres"
+          },
+          "500": {
+            "description": "Erreur interne du serveur"
+          }
+        }
+      }
+    },
+    "/identify": {
+      "post": {
+        "tags": ["Groww-api-next"],
+        "summary": "Identification de la plante",
+        "description": "Cette route permet d'identifier une plante en envoyant des images de ses organes et de comparer les résultats à ceux de la base de données Groww.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "organs": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "example": "leaf"
+                    },
+                    "description": "Les organes de la plante (ex: feuille, fleur, etc.)."
+                  },
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "description": "Les images des organes de la plante."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Identification réussie, retour des plantes similaires",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "vernacularName": {
+                        "type": "string"
+                      },
+                      "scientificName": {
+                        "type": "string"
+                      },
+                      "idGroww": {
+                        "type": "string",
+                        "nullable": true
+                      },
+                      "slug": {
+                        "type": "string",
+                        "nullable": true
+                      },
+                      "score": {
+                        "type": "number",
+                        "format": "float"
+                      },
+                      "images": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "format": "uri"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erreur de validation des paramètres ou des images"
+          },
+          "500": {
+            "description": "Erreur interne du serveur"
+          }
+        }
+      }
+    },
+    "/oauth/token": {
+      "post": {
+        "tags": ["Groww-api-next"],
+        "summary": "Génération d'un token OAuth",
+        "description": "Cette route permet de générer un token d'accès ou un token de rafraîchissement selon le type de grant.",
+        "parameters": [
+          {
+            "name": "grant_type",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["password", "refresh_token", "google_token", "apple_token"],
+              "description": "Le type de grant utilisé pour la génération du token."
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "user@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "password123"
+                  },
+                  "id_token": {
+                    "type": "string",
+                    "example": "example-google-id-token"
+                  }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token généré avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "access_token": {
+                      "type": "string",
+                      "example": "example-access-token"
+                    },
+                    "refresh_token": {
+                      "type": "string",
+                      "example": "example-refresh-token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erreur de validation des paramètres d'entrée"
+          },
+          "401": {
+            "description": "Non autorisé, invalidation des identifiants"
+          },
+          "500": {
+            "description": "Erreur interne du serveur"
+          }
+        }
+      }
+    },
+    "/plants": {
+      "get": {
+        "tags": ["Groww-api-next"],
+        "summary": "Obtenir une liste de plantes",
+        "description": "Cette route permet de récupérer une liste de plantes en fonction de paramètres de recherche tels que `search`, `categoryId`, `actionId`, etc.",
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "rose"
+            },
+            "description": "Filtrer les plantes par nom vernaculaire ou latin."
+          },
+          {
+            "name": "categoryId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "123"
+            },
+            "description": "Filtrer les plantes par ID de catégorie."
+          },
+          {
+            "name": "actionId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "456"
+            },
+            "description": "Filtrer les plantes par ID d'action."
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            },
+            "description": "Numéro de la page à retourner."
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 10
+            },
+            "description": "Nombre de plantes par page."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des plantes récupérée avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "pagination": {
+                          "type": "object",
+                          "properties": {
+                            "page": {
+                              "type": "integer",
+                              "example": 1
+                            },
+                            "pageSize": {
+                              "type": "integer",
+                              "example": 10
+                            },
+                            "pageCount": {
+                              "type": "integer",
+                              "example": 3
+                            },
+                            "total": {
+                              "type": "integer",
+                              "example": 30
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "12345"
+                          },
+                          "vernacularName": {
+                            "type": "string",
+                            "example": "Rose"
+                          },
+                          "latinName": {
+                            "type": "string",
+                            "example": "Rosa"
+                          },
+                          "smallDescription": {
+                            "type": "string",
+                            "example": "Une plante à fleurs"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erreur de validation des paramètres d'entrée"
+          },
+          "500": {
+            "description": "Erreur interne du serveur"
+          }
+        }
+      }
+    },
+    "/plants/{id}": {
+      "get": {
+        "tags": ["Groww-api-next"],
+        "summary": "Obtenir une plante spécifique",
+        "description": "Cette route permet de récupérer une plante en fonction de son identifiant ou de son slug.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "12345"
+            },
+            "description": "ID ou slug de la plante"
+          },
+          {
+            "name": "parameterType",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "slug"
+            },
+            "description": "Type de paramètre utilisé, `id` ou `slug`."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Plante récupérée avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "12345"
+                    },
+                    "vernacularName": {
+                      "type": "string",
+                      "example": "Rose"
+                    },
+                    "latinName": {
+                      "type": "string",
+                      "example": "Rosa"
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "Une plante à fleurs."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Plante non trouvée"
+          },
+          "500": {
+            "description": "Erreur interne du serveur"
+          }
+        }
+      }
+    },
+    "/timeline": {
+      "get": {
+        "tags": ["Groww-api-next"],
+        "summary": "Obtenir la timeline de l'utilisateur",
+        "description": "Récupère la timeline d'un utilisateur en fonction de différents filtres comme plantId, le statut de propriété et l'historique.",
+        "parameters": [
+          {
+            "name": "owned",
+            "in": "query",
+            "description": "Filtrer les plantes par statut de propriété (true/false)",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "plantId",
+            "in": "query",
+            "description": "Filtrer par ID de plante spécifique",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "history",
+            "in": "query",
+            "description": "Inclure les données historiques",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "description": "La langue de la réponse",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "fr"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Données de la timeline pour l'utilisateur",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "date": {
+                        "type": "string",
+                        "example": "2025-03-12"
+                      },
+                      "label": {
+                        "type": "string",
+                        "example": "Mars 2025"
+                      },
+                      "actions": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "object",
+                          "properties": {
+                            "metadata": {
+                              "type": "object",
+                              "properties": {
+                                "total": {
+                                  "type": "integer",
+                                  "example": 5
+                                },
+                                "actionId": {
+                                  "type": "string",
+                                  "example": "5f1c3b0e8e3b0bdf63ac05ef"
+                                },
+                                "actionLabel": {
+                                  "type": "string",
+                                  "example": "Arrosage"
+                                },
+                                "actionPast": {
+                                  "type": "string",
+                                  "example": "Arrosé"
+                                }
+                              }
+                            },
+                            "data": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "userPlant": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string",
+                                        "example": "plant-id"
+                                      },
+                                      "name": {
+                                        "type": "string",
+                                        "example": "Tomate"
+                                      },
+                                      "myPlantName": {
+                                        "type": "string",
+                                        "example": "Ma Tomate"
+                                      },
+                                      "plant": {
+                                        "type": "object",
+                                        "properties": {
+                                          "id": {
+                                            "type": "string",
+                                            "example": "plant-id"
+                                          }
+                                        }
+                                      },
+                                      "coverPhoto": {
+                                        "type": "string",
+                                        "example": "https://example.com/photo.jpg"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Mauvaise requête, probablement en raison de paramètres invalides",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Paramètres de requête invalides"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur interne du serveur",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Une erreur inattendue est survenue"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+  "post": {
+    "tags": ["Groww-api-next"],
+    "summary": "Créer un nouvel utilisateur",
+    "description": "Crée un nouvel utilisateur dans le système",
+    "parameters": [
+      {
+        "name": "body",
+        "in": "body",
+        "required": true,
+        "schema": {
+          "$ref": "#/definitions/CreateUserRequest"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Utilisateur créé avec succès",
+        "schema": {
+          "$ref": "#/definitions/UserResponse"
+        }
+      },
+      "400": {
+        "description": "Corps de la requête invalide"
+      }
+    }
+  }
+},
+"/users/me": {
+  "get": {
+    "tags": ["Groww-api-next"],
+    "summary": "Obtenir les informations de l'utilisateur actuel",
+    "description": "Récupère les détails de l'utilisateur actuellement authentifié",
+    "responses": {
+      "200": {
+        "description": "Détails de l'utilisateur récupérés avec succès",
+        "schema": {
+          "$ref": "#/definitions/UserResponse"
+        }
+      },
+      "401": {
+        "description": "Non autorisé"
+      }
+    }
+  },
+  "put": {
+    "tags": ["Groww-api-next"],
+    "summary": "Mettre à jour les informations de l'utilisateur actuel",
+    "description": "Met à jour les détails de l'utilisateur actuellement authentifié",
+    "parameters": [
+      {
+        "name": "body",
+        "in": "body",
+        "required": true,
+        "schema": {
+          "$ref": "#/definitions/UpdateUserRequest"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Utilisateur mis à jour avec succès",
+        "schema": {
+          "$ref": "#/definitions/UserResponse"
+        }
+      },
+      "400": {
+        "description": "Corps de la requête invalide"
+      },
+      "401": {
+        "description": "Non autorisé"
+      }
+    }
+  },
+  "delete": {
+    "tags": ["Groww-api-next"],
+    "summary": "Supprimer l'utilisateur actuel",
+    "description": "Supprime le compte de l'utilisateur actuellement authentifié",
+    "responses": {
+      "204": {
+        "description": "Utilisateur supprimé avec succès"
+      },
+      "401": {
+        "description": "Non autorisé"
+      }
+    }
+  }
+},
+"/users/check-email": {
+  "post": {
+    "tags": ["Groww-api-next"],
+    "summary": "Vérifier si un email existe déjà",
+    "description": "Valide si l'email fourni est déjà utilisé",
+    "parameters": [
+      {
+        "name": "body",
+        "in": "body",
+        "required": true,
+        "schema": {
+          "$ref": "#/definitions/CheckEmailRequest"
+        }
+      }
+    ],
+    "responses": {
+      "202": {
+        "description": "Vérification de l'email réussie"
+      },
+      "400": {
+        "description": "Corps de la requête invalide"
+      },
+      "409": {
+        "description": "L'email existe déjà"
+      }
+    }
+  }
+},
+"/users/reset-password/request": {
+  "post": {
+    "tags": ["Groww-api-next"],
+    "summary": "Demander la réinitialisation du mot de passe",
+    "description": "Génère un lien de réinitialisation du mot de passe et l'envoie à l'email de l'utilisateur",
+    "parameters": [
+      {
+        "name": "body",
+        "in": "body",
+        "required": true,
+        "schema": {
+          "$ref": "#/definitions/ResetPasswordRequest"
+        }
+      }
+    ],
+    "responses": {
+      "201": {
+        "description": "Demande de réinitialisation du mot de passe envoyée"
+      },
+      "400": {
+        "description": "Corps de la requête invalide"
+      },
+      "404": {
+        "description": "Email introuvable"
+      }
+    }
+  }
+},
+"/users/reset-password": {
+  "post": {
+    "tags": ["Groww-api-next"],
+    "summary": "Réinitialiser le mot de passe",
+    "description": "Réinitialise le mot de passe de l'utilisateur en utilisant le token fourni et le nouveau mot de passe",
+    "parameters": [
+      {
+        "name": "body",
+        "in": "body",
+        "required": true,
+        "schema": {
+          "$ref": "#/definitions/ResetPassword"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Réinitialisation du mot de passe réussie",
+        "schema": {
+          "$ref": "#/definitions/PasswordResetResponse"
+        }
+      },
+      "400": {
+        "description": "Corps de la requête invalide"
+      },
+      "401": {
+        "description": "Token invalide ou expiré"
+      }
+    }
+  }
+},
+"/me/actions": {
+      "get": {
+        "tags": ["Groww-api-next"],
+        "summary": "Récupère les actions de l'utilisateur connecté.",
+        "operationId": "getActions",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page de résultats à retourner.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Nombre d'éléments par page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 10
+            }
+          },
+          {
+            "name": "plantId",
+            "in": "query",
+            "description": "Filtrer les actions par ID de plante.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "plant123"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des actions de l'utilisateur.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "pagination": {
+                          "type": "object",
+                          "properties": {
+                            "page": {
+                              "type": "integer",
+                              "example": 1
+                            },
+                            "pageSize": {
+                              "type": "integer",
+                              "example": 10
+                            },
+                            "pageCount": {
+                              "type": "integer",
+                              "example": 1
+                            },
+                            "total": {
+                              "type": "integer",
+                              "example": 10
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "actionId123"
+                          },
+                          "userId": {
+                            "type": "string",
+                            "example": "userId123"
+                          },
+                          "plantId": {
+                            "type": "string",
+                            "example": "plant123"
+                          },
+                          "action": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "example": "actionId"
+                              },
+                              "name": {
+                                "type": "string",
+                                "example": "Arrosage"
+                              }
+                            }
+                          },
+                          "date": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2025-03-13T10:00:00Z"
+                          },
+                          "skipped": {
+                            "type": "boolean",
+                            "example": false
+                          },
+                          "doNotFollowTasks": {
+                            "type": "boolean",
+                            "example": false
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requête invalide, paramètres manquants ou erronés.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Le paramètre 'page' est manquant ou incorrect."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Groww-api-next"],
+        "summary": "Crée une nouvelle action pour l'utilisateur.",
+        "operationId": "createAction",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "plantId": {
+                    "type": "string",
+                    "example": "plant123"
+                  },
+                  "actionId": {
+                    "type": "string",
+                    "example": "actionId123"
+                  },
+                  "date": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-03-13T10:00:00Z"
+                  },
+                  "skipped": {
+                    "type": "boolean",
+                    "example": false
+                  },
+                  "doNotFollowTasks": {
+                    "type": "boolean",
+                    "example": false
+                  }
+                },
+                "required": ["plantId", "actionId", "date"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Action créée avec succès.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "newActionId"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requête invalide, paramètres erronés.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Le paramètre 'actionId' est manquant."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/me/actions/{id}": {
+      "get": {
+        "tags": ["Groww-api-next"],
+        "summary": "Récupère une action spécifique de l'utilisateur.",
+        "operationId": "getActionById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID de l'action.",
+            "schema": {
+              "type": "string",
+              "example": "actionId123"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Action récupérée avec succès.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "actionId123"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "example": "userId123"
+                    },
+                    "plantId": {
+                      "type": "string",
+                      "example": "plant123"
+                    },
+                    "action": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "actionId"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "Arrosage"
+                        }
+                      }
+                    },
+                    "date": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-03-13T10:00:00Z"
+                    },
+                    "skipped": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "doNotFollowTasks": {
+                      "type": "boolean",
+                      "example": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Action non trouvée.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Action non trouvée."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Groww-api-next"],
+        "summary": "Supprime une action spécifique de l'utilisateur.",
+        "operationId": "deleteAction",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID de l'action à supprimer.",
+            "schema": {
+              "type": "string",
+              "example": "actionId123"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Action supprimée avec succès."
+          },
+          "404": {
+            "description": "Action non trouvée.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Action non trouvée."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/me/categories": {
+      "get": {
+        "tags": ["Groww-api-next"],
+        "summary": "Récupère les catégories des plantes de l'utilisateur.",
+        "operationId": "getCategories",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page de résultats à retourner.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Nombre d'éléments par page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 10
+            }
+          },
+          {
+            "name": "owned",
+            "in": "query",
+            "description": "Filtrer les catégories selon les plantes possédées par l'utilisateur.",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "example": true
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "description": "Langue de la réponse.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "fr"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des catégories récupérées.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "pagination": {
+                          "type": "object",
+                          "properties": {
+                            "page": {
+                              "type": "integer",
+                              "example": 1
+                            },
+                            "pageSize": {
+                              "type": "integer",
+                              "example": 10
+                            },
+                            "pageCount": {
+                              "type": "integer",
+                              "example": 1
+                            },
+                            "total": {
+                              "type": "integer",
+                              "example": 10
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "categoryId123"
+                          },
+                          "label": {
+                            "type": "string",
+                            "example": "Plantes d'intérieur"
+                          },
+                          "title": {
+                            "type": "string",
+                            "example": "Plantes d'intérieur"
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Catégorie pour les plantes d'intérieur."
+                          },
+                          "picture": {
+                            "type": "string",
+                            "example": "https://example.com/picture.jpg"
+                          },
+                          "callToAction": {
+                            "type": "string",
+                            "example": "Découvrez les meilleures plantes d'intérieur."
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requête invalide, paramètres manquants ou erronés.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Le paramètre 'page' est manquant ou incorrect."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/me/notifications/_test": {
+      "post": {
+        "tags": ["Groww-api-next"],
+        "summary": "Test d'envoi de notification pour un utilisateur.",
+        "operationId": "testNotification",
+        "responses": {
+          "204": {
+            "description": "Notification de test envoyée avec succès."
+          },
+          "400": {
+            "description": "Token de notification manquant ou invalide.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Missing notification token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "L'utilisateur n'a pas de plantes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "This user does not have plants"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur lors de l'envoi de la notification.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Could not send the notification"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/me/plants": {
+      "get": {
+        "tags": ["Groww-api-next"],
+        "summary": "Récupère la liste des plantes de l'utilisateur",
+        "operationId": "getPlants",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Numéro de la page de résultats",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Nombre de plantes par page",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 10
+            }
+          },
+          {
+            "name": "owned",
+            "in": "query",
+            "description": "Filtrer par plantes possédées",
+            "schema": {
+              "type": "boolean",
+              "example": true
+            }
+          },
+          {
+            "name": "categoryId",
+            "in": "query",
+            "description": "Filtrer par catégorie de plante",
+            "schema": {
+              "type": "string",
+              "example": "60d3b41abdacab002f7c7b1f"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des plantes de l'utilisateur",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "pagination": {
+                          "type": "object",
+                          "properties": {
+                            "page": {
+                              "type": "integer"
+                            },
+                            "pageSize": {
+                              "type": "integer"
+                            },
+                            "pageCount": {
+                              "type": "integer"
+                            },
+                            "total": {
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "60d5d9f44f0a2a001f8b4567"
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "Rose"
+                          },
+                          "latinName": {
+                            "type": "string",
+                            "example": "Rosa"
+                          },
+                          "slug": {
+                            "type": "string",
+                            "example": "rose"
+                          },
+                          "category": {
+                            "type": "string",
+                            "example": "Flower"
+                          },
+                          "photos": {
+                            "type": "object",
+                            "properties": {
+                              "cover": {
+                                "type": "string",
+                                "example": "https://example.com/photo/cover.jpg"
+                              },
+                              "user": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "example": "60d5d9f44f0a2a001f8b4568"
+                                    },
+                                    "url": {
+                                      "type": "string",
+                                      "example": "https://example.com/photo/user.jpg"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Paramètres de la requête invalides"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Groww-api-next"],
+        "summary": "Crée une nouvelle plante pour l'utilisateur",
+        "operationId": "createPlant",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "plantId": {
+                    "type": "string",
+                    "example": "60d3b41abdacab002f7c7b1f"
+                  },
+                  "vernacularName": {
+                    "type": "string",
+                    "example": "Rose"
+                  },
+                  "myPlantName": {
+                    "type": "string",
+                    "example": "Ma jolie rose"
+                  },
+                  "latinName": {
+                    "type": "string",
+                    "example": "Rosa"
+                  },
+                  "category": {
+                    "type": "string",
+                    "example": "Flower"
+                  },
+                  "photos": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "example": "https://example.com/photo.jpg"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Plante créée avec succès",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "60d5d9f44f0a2a001f8b4567"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Paramètres de la requête invalides"
+            }
+          }
+        }
+      }
+    },
+    "/me/plants/{id}": {
+      "get": {
+        "tags": ["Groww-api-next"],
+        "summary": "Récupère une plante spécifique de l'utilisateur",
+        "operationId": "getPlant",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID de la plante",
+            "schema": {
+              "type": "string",
+              "example": "60d5d9f44f0a2a001f8b4567"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Plante récupérée avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "60d5d9f44f0a2a001f8b4567"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Rose"
+                    },
+                    "latinName": {
+                      "type": "string",
+                      "example": "Rosa"
+                    },
+                    "slug": {
+                      "type": "string",
+                      "example": "rose"
+                    },
+                    "category": {
+                      "type": "string",
+                      "example": "Flower"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Plante non trouvée"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Groww-api-next"],
+        "summary": "Met à jour les informations d'une plante de l'utilisateur",
+        "operationId": "updatePlant",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID de la plante",
+            "schema": {
+              "type": "string",
+              "example": "60d5d9f44f0a2a001f8b4567"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "myPlantName": {
+                    "type": "string",
+                    "example": "Ma nouvelle rose"
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Plante mise à jour avec succès",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "60d5d9f44f0a2a001f8b4567"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Paramètres invalides"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Groww-api-next"],
+        "summary": "Supprime une plante de l'utilisateur",
+        "operationId": "deletePlant",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID de la plante",
+            "schema": {
+              "type": "string",
+              "example": "60d5d9f44f0a2a001f8b4567"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Plante supprimée avec succès"
+          },
+          "404": {
+            "description": "Plante non trouvée"
+          }
+        }
+      }
+    },
+    "/me/plants/{plantId}/photos": {
+      "post": {
+        "tags": ["Groww-api-next"],
+        "summary": "Ajoute une photo à une plante",
+        "operationId": "createPlantPhoto",
+        "parameters": [
+          {
+            "name": "plantId",
+            "in": "path",
+            "required": true,
+            "description": "ID de la plante",
+            "schema": {
+              "type": "string",
+              "example": "60d5d9f44f0a2a001f8b4567"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Photo ajoutée avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "60d5d9f44f0a2a001f8b4568"
+                    },
+                    "url": {
+                      "type": "string",
+                      "example": "https://example.com/photo.jpg"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erreur lors de l'ajout de la photo"
+          }
+        }
+      }
+    }
+
+    },
+    "definitions": {
+    "CreateUserRequest": {
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "password": { "type": "string" },
+        "firstname": { "type": "string" },
+        "lastname": { "type": "string" },
+        "cityId": { "type": "string" }
+      },
+      "required": ["email", "password", "firstname", "lastname"]
+    },
+    "UpdateUserRequest": {
+      "type": "object",
+      "properties": {
+        "firstname": { "type": "string" },
+        "lastname": { "type": "string" },
+        "cityId": { "type": "string" },
+        "language": { "type": "string" }
+      }
+    },
+    "CheckEmailRequest": {
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" }
+      },
+      "required": ["email"]
+    },
+    "ResetPasswordRequest": {
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" }
+      },
+      "required": ["email"]
+    },
+    "ResetPassword": {
+      "type": "object",
+      "properties": {
+        "token": { "type": "string" },
+        "password": { "type": "string" }
+      },
+      "required": ["token", "password"]
+    },
+    "UserResponse": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "email": { "type": "string" },
+        "firstname": { "type": "string" },
+        "lastname": { "type": "string" },
+        "cityId": { "type": "string" },
+        "city": { "type": "string" },
+        "country": { "type": "string" },
+        "language": { "type": "string" },
+        "notifications": {
+          "type": "object",
+          "properties": {
+            "accepted": { "type": "boolean" },
+            "token": { "type": "string" }
+          }
+        }
+      }
+    },
+    "PasswordResetResponse": {
+      "type": "object",
+      "properties": {
+        "access_token": { "type": "string" },
+        "refresh_token": { "type": "string" }
+      }
+    }
+    },
+    "components": {
+      "schemas": {
+        "Action": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "adjectival": {
+              "type": "string"
+            },
+            "callToAction": {
+              "type": "string"
+            },
+            "notify": {
+              "type": "boolean"
+            },
+            "diary": {
+              "type": "string"
+            },
+            "conditions": {
+              "type": "string"
+            }
+          }
+        },
+        "Category": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "callToAction": {
+            "type": "string"
+          },
+          "picture": {
+            "type": "string"
+          }
+        }
+        },
+        "City": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "simpleName": {
+            "type": "string"
+          },
+          "realName": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "department": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          },
+          "position": {
+            "type": "object",
+            "properties": {
+              "coordinates": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+        },
+        "Country": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+        },
+        "IdentificationResult": {
+        "type": "object",
+        "properties": {
+          "vernacularName": {
+            "type": "string"
+          },
+          "scientificName": {
+            "type": "string"
+          },
+          "idGroww": {
+            "type": "string",
+            "nullable": true
+          },
+          "slug": {
+            "type": "string",
+            "nullable": true
+          },
+          "score": {
+            "type": "number",
+            "format": "float"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            }
+          }
+        }
+        },
+        "OAuthTokenResponse": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string"
+          },
+          "refresh_token": {
+            "type": "string"
+          }
+        }
+        },
+        "Plant": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "12345"
+          },
+          "vernacularName": {
+            "type": "string",
+            "example": "Rose"
+          },
+          "latinName": {
+            "type": "string",
+            "example": "Rosa"
+          },
+          "smallDescription": {
+            "type": "string",
+            "example": "Une plante à fleurs"
+          }
+        }
+        },
+        "Timeline": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "actions": {
+            "type": "object"
+          }
+        }
+        }
+      }
+    }
+  }
+  
