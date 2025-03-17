@@ -127,7 +127,64 @@ ssh -T git@gitlab.com</pre>
       }
     ],
     "paths": {
-        "extract-weather / index":{"get": {
+        "/Login" : {
+            "post": {
+        "tags": ["groww-api-next"],
+        "summary": "Authentification de l'utilisateur",
+        "description": "Permet à un administrateur de se connecter avec son nom d'utilisateur et son mot de passe.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "example": "admin"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "MotDePasse123!"
+                  }
+                },
+                "required": ["username", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "<div style='' style='display: inline-block; overflow: hidden; cursor: zoom-in;'><img src='./image/backoffice/login.png' alt='Prévisions météorologiques' style='' /></div>",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Connexion réussie"
+                    },
+                    "token": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR..."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Identifiants incorrects"
+          }
+        }
+      
+    
+        }
+            
+        },
+        "extract-weather / index":{
+            "get": {
     "tags": ["Groww-scripts-next"],
     "summary": "extract-weather / index",
     "description": "<p>Cette API est responsable de l'extraction et du traitement des données météorologiques pour les villes des utilisateurs. Elle interroge l'API OpenWeather pour obtenir les prévisions et les conditions météorologiques actuelles et les stocke dans Elasticsearch pour un accès ultérieur. L'API calcule également l'évapotranspiration potentielle (ETP) basée sur les conditions météorologiques et les données historiques pour ajuster les stocks d'eau.</p>\n
@@ -456,8 +513,8 @@ module.exports = function computeTaks(\n
     "tags": ["Groww-algorithm"],
     "summary": "post-conditions",
     "description": "<p>Cette route permet de vérifier les conditions de la tâche avant de l'exécuter en fonction des événements passés et de la date de référence.</p>\n
-    <h3>Code associé :</h3>\n
-    <pre><code class=\"language-javascript\">const {\n  startOfDay,\n  differenceInMonths,\n  differenceInYears,\n  parseISO,\n} = require('date-fns');\n\n
+        <h3>Code associé :</h3>\n
+        <pre><code class=\"language-javascript\">const {\n  startOfDay,\n  differenceInMonths,\n  differenceInYears,\n  parseISO,\n} = require('date-fns');\n\n
 module.exports = function postConditions(\n  todo,\n  user_plant,\n  at_start_event,\n  task,\n  time_reference = new Date()\n) {\n  
   if (!task) {\n    
     return false;\n  
@@ -562,7 +619,7 @@ module.exports = function postConditions(\n  todo,\n  user_plant,\n  at_start_ev
       default:\n        
         break;\n    
     }\n  }\n\n  
-  return true;\n};</code></pre>\n\n
+        return true;\n};</code></pre>\n\n
     <h3>Explication du Code :</h3>\n
     <p>La fonction <code>preConditions</code> vérifie si les conditions préalables sont remplies avant d'exécuter une tâche sur une plante. Elle prend en compte l'état de la plante (à l'intérieur ou à l'extérieur, dans un pot ou en terre, etc.) et les conditions définies dans la tâche.</p>\n\n
     
@@ -3013,7 +3070,19 @@ module.exports = function postConditions(\n  todo,\n  user_plant,\n  at_start_ev
       }
     }
     },
+    "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
     "components": {
+      "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
       "schemas": {
         "Action": {
           "type": "object",

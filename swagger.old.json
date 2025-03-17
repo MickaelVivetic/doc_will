@@ -17,7 +17,7 @@
       "name": "Submit",
       "externalDocs": {
         "description": "Documentation",
-        "url": "https://emailengine.app/sending-emails"
+        "url": "https://Groww.app/sending-emails"
       }
     },
     {
@@ -31,14 +31,14 @@
     { "name": "Access Tokens" },
     {
       "name": "Settings",
-      "description": "Runtime configuration for EmailEngine"
+      "description": "Runtime configuration for Groww"
     },
     {
       "name": "Templates",
       "description": "Manage templates for sending emails",
       "externalDocs": {
         "description": "Documentation",
-        "url": "https://emailengine.app/email-templates"
+        "url": "https://Groww.app/email-templates"
       }
     },
     { "name": "Logs" },
@@ -49,7 +49,7 @@
       "name": "OAuth2 Applications",
       "externalDocs": {
         "description": "Documentation",
-        "url": "https://emailengine.app/oauth2-configuration"
+        "url": "https://Groww.app/oauth2-configuration"
       }
     },
     { "name": "SMTP Gateway" },
@@ -297,7 +297,7 @@
       "post": {
         "summary": "Register a license",
         "operationId": "postV1License",
-        "description": "Set up a license for EmailEngine to unlock all features",
+        "description": "Set up a license for Groww to unlock all features",
         "parameters": [
           {
             "type": "integer",
@@ -2945,7 +2945,7 @@
       "post": {
         "summary": "Submit message for delivery",
         "operationId": "postV1AccountAccountSubmit",
-        "description": "Submit message for delivery. If reference message ID is provided then EmailEngine adds all headers and flags required for a reply/forward automatically.",
+        "description": "Submit message for delivery. If reference message ID is provided then Groww adds all headers and flags required for a reply/forward automatically.",
         "parameters": [
           {
             "type": "integer",
@@ -3483,7 +3483,7 @@
       "properties": {
         "response": {
           "type": "string",
-          "description": "Error message from EmailEngine",
+          "description": "Error message from Groww",
           "example": "Token request failed"
         },
         "serverResponseCode": {
@@ -3764,7 +3764,7 @@
         "application": {
           "type": "string",
           "description": "Application associated with the license",
-          "example": "@postalsys/emailengine-app"
+          "example": "@postalsys/Groww-app"
         },
         "key": {
           "type": "string",
@@ -3780,7 +3780,7 @@
         "hostname": {
           "type": "string",
           "description": "Hostname or environment this license applies to",
-          "example": "emailengine.example.com"
+          "example": "Groww.example.com"
         },
         "created": {
           "type": "string",
@@ -3801,7 +3801,7 @@
         "type": {
           "type": "string",
           "description": "Type of the active license",
-          "example": "EmailEngine License"
+          "example": "Groww License"
         },
         "details": { "$ref": "#/definitions/LicenseDetails" },
         "suspended": {
@@ -4070,7 +4070,7 @@
         },
         "attemptsMade": {
           "type": "integer",
-          "description": "How many times EmailEngine has tried to deliver this email",
+          "description": "How many times Groww has tried to deliver this email",
           "example": 3
         },
         "attempts": {
@@ -4216,16 +4216,16 @@
         "notifyHeaders": { "$ref": "#/definitions/notifyHeaders" },
         "serviceUrl": {
           "type": "string",
-          "description": "The base URL of the EmailEngine service. If path is also provided then it is ignored.",
-          "example": "https://emailengine.example.com",
+          "description": "The base URL of the Groww service. If path is also provided then it is ignored.",
+          "example": "https://Groww.example.com",
           "x-format": {
             "uri": { "scheme": ["http", "https"], "allowRelative": false }
           }
         },
         "notificationBaseUrl": {
           "type": "string",
-          "description": "Base URL of EmailEngine for receiving external notifications like MS Graph webhooks. Can contain a path value. Defaults to `serviceUrl` if not set.",
-          "example": "https://emailengine.example.com",
+          "description": "Base URL of Groww for receiving external notifications like MS Graph webhooks. Can contain a path value. Defaults to `serviceUrl` if not set.",
+          "example": "https://Groww.example.com",
           "x-format": {
             "uri": { "scheme": ["http", "https"], "allowRelative": false }
           }
@@ -4473,7 +4473,7 @@
         "pageBrandName": {
           "type": "string",
           "description": "Brand name to use in the HTML title element",
-          "example": "EmailEngine",
+          "example": "Groww",
           "maxLength": 1024
         },
         "openAiPreProcessingFn": {
@@ -4531,13 +4531,13 @@
       "properties": {
         "version": {
           "type": "string",
-          "description": "EmailEngine version number",
+          "description": "Groww version number",
           "example": "2.51.0"
         },
         "license": {
           "type": "string",
-          "description": "EmailEngine license",
-          "example": "LICENSE_EMAILENGINE"
+          "description": "Groww license",
+          "example": "LICENSE_Groww"
         },
         "accounts": {
           "type": "integer",
@@ -4777,7 +4777,7 @@
     },
     "SubconnectionPaths": {
       "type": "array",
-      "description": "An array of mailbox paths. If set, then EmailEngine opens additional IMAP connections against these paths to detect changes faster. Note: Connection counts are usually highly limited.",
+      "description": "An array of mailbox paths. If set, then Groww opens additional IMAP connections against these paths to detect changes faster. Note: Connection counts are usually highly limited.",
       "example": ["[Gmail]/Spam", "\\Sent"],
       "x-constraint": { "single": true },
       "items": { "type": "string", "maxLength": 256 }
@@ -4945,7 +4945,7 @@
         },
         "delegatedAccount": {
           "type": "string",
-          "description": "Account ID of another account to authenticate the shared mailbox. If provided, EmailEngine uses the credentials of this account instead of the current one.",
+          "description": "Account ID of another account to authenticate the shared mailbox. If provided, Groww uses the credentials of this account instead of the current one.",
           "example": "user123",
           "maxLength": 256,
           "x-convert": { "trim": true }
@@ -4977,14 +4977,14 @@
         },
         "provider": {
           "type": "string",
-          "description": "OAuth2 Application ID for an application configured in EmailEngine.",
+          "description": "OAuth2 Application ID for an application configured in Groww.",
           "example": "AAABhaBPHscAAAAH",
           "maxLength": 256
         },
         "auth": { "$ref": "#/definitions/OAuth2Authentication" },
         "useAuthServer": {
           "type": "boolean",
-          "description": "Set to true to use an external authentication server instead of EmailEngine managing access tokens.",
+          "description": "Set to true to use an external authentication server instead of Groww managing access tokens.",
           "example": false
         },
         "accessToken": {
@@ -6252,7 +6252,7 @@
         "date": {
           "type": "string",
           "format": "date-time",
-          "description": "Time the bounce was registered by EmailEngine",
+          "description": "Time the bounce was registered by Groww",
           "example": "2021-03-22T13:13:31.000Z"
         }
       },
@@ -6516,14 +6516,14 @@
         },
         "provider": {
           "type": "string",
-          "description": "OAuth2 Application ID for an application configured in EmailEngine.",
+          "description": "OAuth2 Application ID for an application configured in Groww.",
           "example": "AAABhaBPHscAAAAH",
           "maxLength": 256
         },
         "auth": { "$ref": "#/definitions/OAuth2Authentication" },
         "useAuthServer": {
           "type": "boolean",
-          "description": "Set to true to use an external authentication server instead of EmailEngine managing access tokens.",
+          "description": "Set to true to use an external authentication server instead of Groww managing access tokens.",
           "example": false
         },
         "accessToken": {
@@ -6936,16 +6936,16 @@
         "notifyHeaders": { "$ref": "#/definitions/notifyHeaders" },
         "serviceUrl": {
           "type": "string",
-          "description": "The base URL of the EmailEngine service. If path is also provided then it is ignored.",
-          "example": "https://emailengine.example.com",
+          "description": "The base URL of the Groww service. If path is also provided then it is ignored.",
+          "example": "https://Groww.example.com",
           "x-format": {
             "uri": { "scheme": ["http", "https"], "allowRelative": false }
           }
         },
         "notificationBaseUrl": {
           "type": "string",
-          "description": "Base URL of EmailEngine for receiving external notifications like MS Graph webhooks. Can contain a path value. Defaults to `serviceUrl` if not set.",
-          "example": "https://emailengine.example.com",
+          "description": "Base URL of Groww for receiving external notifications like MS Graph webhooks. Can contain a path value. Defaults to `serviceUrl` if not set.",
+          "example": "https://Groww.example.com",
           "x-format": {
             "uri": { "scheme": ["http", "https"], "allowRelative": false }
           }
@@ -7193,7 +7193,7 @@
         "pageBrandName": {
           "type": "string",
           "description": "Brand name to use in the HTML title element",
-          "example": "EmailEngine",
+          "example": "Groww",
           "maxLength": 1024
         },
         "openAiPreProcessingFn": {
@@ -7599,7 +7599,7 @@
     },
     "action": {
       "type": "string",
-      "description": "Specifies the action. Valid values: 'forward', 'reply', 'reply-all'. For 'reply' and 'forward', if a 'to' field is provided in the request, it overrides the original recipient. For 'reply-all', EmailEngine merges to/cc/bcc from the original email and the request.",
+      "description": "Specifies the action. Valid values: 'forward', 'reply', 'reply-all'. For 'reply' and 'forward', if a 'to' field is provided in the request, it overrides the original recipient. For 'reply-all', Groww merges to/cc/bcc from the original email and the request.",
       "example": "reply",
       "default": "reply",
       "enum": ["forward", "reply", "reply-all"],
@@ -7611,7 +7611,7 @@
       "properties": {
         "message": {
           "type": "string",
-          "description": "EmailEngine internal ID of the referenced message (not the Message-ID in email headers).",
+          "description": "Groww internal ID of the referenced message (not the Message-ID in email headers).",
           "example": "AAAAAQAACnA",
           "maxLength": 256
         },
@@ -8307,12 +8307,12 @@
         "headers": { "$ref": "#/definitions/CustomHeaders" },
         "trackOpens": {
           "type": "boolean",
-          "description": "Should EmailEngine track opens for this message",
+          "description": "Should Groww track opens for this message",
           "example": false
         },
         "trackClicks": {
           "type": "boolean",
-          "description": "Should EmailEngine track clicks for this message",
+          "description": "Should Groww track clicks for this message",
           "example": false
         },
         "copy": {
@@ -8364,7 +8364,7 @@
         "dsn": { "$ref": "#/definitions/DSN" },
         "baseUrl": {
           "type": "string",
-          "description": "Optional base URL for trackers. This URL must point to your EmailEngine instance.",
+          "description": "Optional base URL for trackers. This URL must point to your Groww instance.",
           "example": "https://customer123.myservice.com",
           "x-format": {
             "uri": { "scheme": ["http", "https"], "allowRelative": false }
@@ -8393,7 +8393,7 @@
         },
         "dryRun": {
           "type": "boolean",
-          "description": "If true, then EmailEngine does not send the email and returns an RFC822 formatted email file. Tracking information is not added to the email.",
+          "description": "If true, then Groww does not send the email and returns an RFC822 formatted email file. Tracking information is not added to the email.",
           "default": false
         }
       }
@@ -8921,14 +8921,14 @@
         },
         "provider": {
           "type": "string",
-          "description": "OAuth2 Application ID for an application configured in EmailEngine.",
+          "description": "OAuth2 Application ID for an application configured in Groww.",
           "example": "AAABhaBPHscAAAAH",
           "maxLength": 256
         },
         "auth": { "$ref": "#/definitions/OAuth2Authentication" },
         "useAuthServer": {
           "type": "boolean",
-          "description": "Set to true to use an external authentication server instead of EmailEngine managing access tokens.",
+          "description": "Set to true to use an external authentication server instead of Groww managing access tokens.",
           "example": false
         },
         "accessToken": {

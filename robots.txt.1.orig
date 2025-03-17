@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>EmailEngine documentation</title>
+    <title>Groww documentation</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet" />
@@ -19,7 +19,7 @@
       }
     </style>
 
-    <script defer data-domain="emailengine.app" src="https://plausible.apps.srv.dev/js/plausible.js"></script>
+    <script defer data-domain="Groww.app" src="https://plausible.apps.srv.dev/js/plausible.js"></script>
   </head>
   <body>
     <redoc spec-url="/swagger.json" expand-responses="200,201" path-in-middle-panel="true"></redoc>
