@@ -129,7 +129,7 @@ ssh -T git@gitlab.com</pre>
     "paths": {
         "/Login" : {
             "post": {
-        "tags": ["groww-api-next"],
+        "tags": ["Groww-backoffice"],
         "summary": "Authentification de l'utilisateur",
         "description": "Permet à un administrateur de se connecter avec son nom d'utilisateur et son mot de passe.",
         "requestBody": {
@@ -183,6 +183,23 @@ ssh -T git@gitlab.com</pre>
         }
             
         },
+        "index":{
+          "get": {
+        "tags": ["Groww-backoffice"],
+        "summary": "Page d'accueil après connexion",
+        "description": "Affiche la liste des sections accessibles après connexion.",
+        "responses": {
+          "200": {
+            "description": "Liste des sections du tableau de bord
+            <div style='' style='display: inline-block; overflow: hidden; cursor: zoom-in;'><img src='./image/backoffice/index.png' alt='Prévisions météorologiques' style='' /></div>",
+            
+          },
+          "401": {
+            "description": "Utilisateur non authentifié"
+          }
+        }
+      }
+    },
         "extract-weather / index":{
             "get": {
     "tags": ["Groww-scripts-next"],
