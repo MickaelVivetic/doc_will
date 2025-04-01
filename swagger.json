@@ -5,13 +5,12 @@
         "version": "1.0.0"
     },
     "swagger": "2.0",
-    "host": "https://api.recette.groww.fr",
+    "host": "api.recette.groww.fr",
     "schemes": ["https"],
     "tags": [
         {
             "name": "Installation",
-            "description": "
-        <section id='contexte'>
+            "description": "<section id='contexte'>
             <h2>Contexte</h2>
             <p><strong>Groww.fr</strong> est une application développée par Willemse SAS, spécialisée dans l’accompagnement des jardiniers, amateurs et experts, dans l’entretien de leurs plantes. 
             Elle fournit des conseils personnalisés, des rappels d’entretien et des recommandations adaptées aux saisons et aux types de végétaux.</p>
@@ -155,7 +154,7 @@ ssh -T git@gitlab.com</pre>
         },
         "responses": {
           "200": {
-            "description": "<div style='' style='display: inline-block; overflow: hidden; cursor: zoom-in;'><img src='./image/backoffice/login.png' alt='Prévisions météorologiques' style='' /></div>",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -183,16 +182,14 @@ ssh -T git@gitlab.com</pre>
         }
             
         },
-        "index":{
+        "/index":{
           "get": {
         "tags": ["Groww-backoffice"],
         "summary": "Page d'accueil après connexion",
         "description": "Affiche la liste des sections accessibles après connexion.",
         "responses": {
           "200": {
-            "description": "Liste des sections du tableau de bord
-            <div style='' style='display: inline-block; overflow: hidden; cursor: zoom-in;'><img src='./image/backoffice/index.png' alt='Prévisions météorologiques' style='' /></div>",
-            
+            "description": "Liste des sections du tableau de bord"
           },
           "401": {
             "description": "Utilisateur non authentifié"
@@ -200,6 +197,1429 @@ ssh -T git@gitlab.com</pre>
         }
       }
     },
+    "/actionsback": {
+      "post": {
+        "tags": ["Groww-backoffice"],
+        "operationId": "<h2>Créer une nouvelle action</h2><p>Cette route permet de créer une nouvelle action en fournissant les informations nécessaires via une requête POST.</p>",
+        "summary": "Créer une nouvelle action",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Action"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Action créée avec succès"
+          },
+          "400": {
+            "description": "Requête invalide"
+          }
+        }
+      }
+    },
+    "/actionsback/{id}": {
+      "put": {
+        "tags": ["Groww-backoffice"],
+        "operationId": "<h2>Modifier une action existante</h2><p>Cette route permet de modifier une action existante en envoyant les nouvelles valeurs via une requête PUT.</p>",
+        "summary": "Modifier une action existante",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Action"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Action modifiée avec succès"
+          },
+          "400": {
+            "description": "Requête invalide"
+          },
+          "404": {
+            "description": "Action non trouvée"
+          }
+        }
+      }
+    },
+    "/administrators": {
+      "post": {
+        "tags": ["Groww-backoffice"],
+        "summary": "Créer un administrateur",
+        "description": "Crée un nouvel administrateur en définissant le nom d'utilisateur et le mot de passe (avec confirmation).",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "username",
+            "in": "formData",
+            "description": "Nom d'utilisateur de l'administrateur",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "in": "formData",
+            "description": "Mot de passe de l'administrateur",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "confirm",
+            "in": "formData",
+            "description": "Confirmation du mot de passe",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Administrateur créé avec succès."
+          },
+          "400": {
+            "description": "Erreur: le mot de passe et la confirmation ne correspondent pas."
+          }
+        }
+      }
+    },
+    "/administrators/{id}": {
+      "put": {
+        "tags": ["Groww-backoffice"],
+        "summary": "Modifier un administrateur",
+        "description": "Modifie le nom d'utilisateur d'un administrateur existant.",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID de l'administrateur à modifier",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "username",
+            "in": "formData",
+            "description": "Nouveau nom d'utilisateur",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Administrateur mis à jour avec succès."
+          },
+          "404": {
+            "description": "Administrateur non trouvé."
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Groww-backoffice"],
+        "summary": "Supprimer un administrateur",
+        "description": "Supprime un administrateur existant. L'administrateur connecté ne peut pas se supprimer lui-même.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID de l'administrateur à supprimer",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Administrateur supprimé avec succès."
+          },
+          "400": {
+            "description": "Erreur: vous ne pouvez pas vous supprimer vous-même."
+          },
+          "404": {
+            "description": "Administrateur non trouvé."
+          }
+        }
+      }
+    },
+    "/badges": {
+      "post": {
+        "tags": ["Groww-backoffice"],
+        "summary": "Créer un badge",
+        "description": "Crée un nouveau badge avec une image",
+        "operationId": "createBadge",
+        "parameters": [
+          {
+            "name": "picture",
+            "in": "formData",
+            "description": "Image associée au badge",
+            "required": true,
+            "type": "string",
+            "format": "binary"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Badge créé avec succès"
+          },
+          "400": {
+            "description": "Requête incorrecte"
+          }
+        }
+      }
+    },
+    "/badges/{id}": {
+      "put": {
+        "tags": ["Groww-backoffice"],
+        "summary": "Modifier un badge",
+        "description": "Met à jour un badge existant avec une nouvelle image",
+        "operationId": "editBadge",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID du badge à mettre à jour",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "picture",
+            "in": "formData",
+            "description": "Nouvelle image pour le badge",
+            "required": true,
+            "type": "string",
+            "format": "binary"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Badge mis à jour avec succès"
+          },
+          "400": {
+            "description": "Requête incorrecte"
+          },
+          "404": {
+            "description": "Badge non trouvé"
+          }
+        }
+      }
+    },
+    "/categorie": {
+      "post": {
+        "tags": ["Groww-backoffice"],
+        "summary": "Créer une nouvelle catégorie",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "picture": { "type": "string" },
+                "background_color": { "type": "string" },
+                "order": { "type": "integer" },
+                "visible": { "type": "boolean" }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Catégorie créée avec succès"
+          }
+        }
+      }
+    },
+    "/categorie/{id}": {
+      "put": {
+        "tags": ["Groww-backoffice"],
+        "summary": "Modifier une catégorie existante",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "picture": { "type": "string" },
+                "background_color": { "type": "string" },
+                "order": { "type": "integer" },
+                "visible": { "type": "boolean" }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Catégorie mise à jour avec succès"
+          }
+        }
+      }
+    },
+    "/conditions": {
+      "post": {
+        "tags": [
+          "Groww-backoffice"
+        ],
+        "summary": "Créer une nouvelle condition",
+        "description": "Crée une condition en utilisant le paramètre 'type'.",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "type",
+            "in": "formData",
+            "description": "Le type de la condition",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Condition créée avec succès"
+          },
+          "400": {
+            "description": "Erreur dans les données envoyées"
+          }
+        }
+      }
+    },
+    "/conditions/{id}": {
+      "put": {
+        "tags": [
+          "Groww-backoffice"
+        ],
+        "summary": "Modifier une condition existante",
+        "description": "Modifie une condition identifiée par son id et met à jour le paramètre 'type'.",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Identifiant de la condition à modifier",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "in": "formData",
+            "description": "Le nouveau type de la condition",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Condition modifiée avec succès"
+          },
+          "400": {
+            "description": "Erreur dans les données envoyées"
+          },
+          "404": {
+            "description": "Condition non trouvée"
+          }
+        }
+      }
+    },
+    "/life_cycles": {
+      "get": {
+        "tags": [
+          "Groww-backoffice"
+        ],
+        "summary": "Liste des cycles de vie",
+        "operationId": "getLifeCycles",
+        "responses": {
+          "200": {
+            "description": "Liste des cycles de vie récupérée avec succès"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Groww-backoffice"
+        ],
+        "summary": "Créer un nouveau cycle de vie",
+        "operationId": "createLifeCycle",
+        "responses": {
+          "201": {
+            "description": "Cycle de vie créé avec succès"
+          }
+        }
+      }
+    },
+    "/life_cycles/{id}": {
+      "get": {
+        "tags": [
+          "Groww-backoffice"
+        ],
+        "summary": "Obtenir un cycle de vie par son ID",
+        "operationId": "getLifeCycleById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID du cycle de vie",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Détails du cycle de vie récupéré avec succès"
+          },
+          "404": {
+            "description": "Cycle de vie non trouvé"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Groww-backoffice"
+        ],
+        "summary": "Mettre à jour un cycle de vie existant",
+        "operationId": "updateLifeCycle",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID du cycle de vie à mettre à jour",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cycle de vie mis à jour avec succès"
+          },
+          "404": {
+            "description": "Cycle de vie non trouvé"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Groww-backoffice"
+        ],
+        "summary": "Supprimer un cycle de vie",
+        "operationId": "deleteLifeCycle",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID du cycle de vie à supprimer",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Cycle de vie supprimé avec succès"
+          },
+          "404": {
+            "description": "Cycle de vie non trouvé"
+          }
+        }
+      }
+    },
+    "/plants/create": {
+      "get": {
+        "tags": [
+          "Groww-backoffice"
+        ],
+        "summary": "Affiche le formulaire de création d'une plante",
+        "parameters": [
+          {
+            "name": "parent",
+            "in": "query",
+            "description": "Identifiant du parent (optionnel)",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Formulaire de création de plante"
+          }
+        }
+      }
+    },
+    "/plants/edit/{id}": {
+      "get": {
+        "tags": [
+          "Groww-backoffice"
+        ],
+        "summary": "Affiche le formulaire d'édition d'une plante",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Identifiant de la plante à éditer",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Formulaire d'édition de plante"
+          }
+        }
+      }
+    },
+    "/plants/delete": {
+      "post": {
+        "tags": [
+          "Groww-backoffice"
+        ],
+        "summary": "Supprime une association de plante",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "formData",
+            "description": "Identifiant de l'association à supprimer",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Association supprimée"
+          }
+        }
+      }
+    },
+    "/plants/add/{id}": {
+      "post": {
+        "tags": [
+          "Groww-backoffice"
+        ],
+        "summary": "Ajoute une association à une plante",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Identifiant de la plante",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "refs",
+            "in": "formData",
+            "description": "Liste des références à associer",
+            "required": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Association ajoutée"
+          }
+        }
+      }
+    },
+    "/plants/willemse/{id}": {
+      "get": {
+        "tags": [
+          "Groww-backoffice"
+        ],
+        "summary": "Affiche les associations willemse d'une plante",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Identifiant de la plante",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Données des associations willemse"
+          }
+        }
+      }
+    },
+    "/plants/association/{id}": {
+      "get": {
+        "tags": [
+          "Groww-backoffice"
+        ],
+        "summary": "Affiche les associations d'une plante",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Identifiant de la plante",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Détails des associations de la plante"
+          }
+        }
+      }
+    },
+    "/plants/variety": {
+      "post": {
+        "tags": [
+          "Groww-backoffice"
+        ],
+        "summary": "Crée une variété de plante",
+        "parameters": [
+          {
+            "name": "parent",
+            "in": "formData",
+            "description": "Identifiant de la plante parente",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Variété créée avec succès"
+          }
+        }
+      }
+    },
+    "/plants/view/{id}": {
+      "get": {
+        "tags": [
+          "Groww-backoffice"
+        ],
+        "summary": "Affiche le détail d'une plante",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Identifiant de la plante",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Détails de la plante"
+          }
+        }
+      }
+    },
+    "/partners": {
+      "post": {
+        "tags": [
+          "Groww-backoffice"
+        ],
+        "summary": "Créer un partenaire",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Nom du partenaire"
+                  },
+                  "visible": {
+                    "type": "boolean",
+                    "description": "Indique si le partenaire est visible"
+                  }
+                },
+                "required": [
+                  "name",
+                  "visible"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Partenaire créé"
+          }
+        }
+      }
+    },
+    "/partners/{id}": {
+      "put": {
+        "tags": [
+          "Groww-backoffice"
+        ],
+        "summary": "Modifier un partenaire",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID du partenaire",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Nom du partenaire"
+                  },
+                  "visible": {
+                    "type": "boolean",
+                    "description": "Statut de visibilité"
+                  },
+                  "coupons": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Liste des coupons associés"
+                  }
+                },
+                "required": [
+                  "name",
+                  "visible",
+                  "coupons"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Partenaire modifié"
+          }
+        }
+      }
+    },
+    "/rule_alerts/list": {
+      "get": {
+        "tags": [
+          "Groww-backoffice"
+        ],
+        "summary": "Liste des alertes de règles",
+        "description": "Retourne une liste paginée des alertes de règles.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Numéro de la page",
+            "required": false,
+            "type": "integer",
+            "default": 1
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Nombre maximum d'enregistrements par page",
+            "required": false,
+            "type": "integer",
+            "default": 100
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Terme de recherche pour filtrer les alertes de règles",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Opération réussie"
+          }
+        }
+      }
+    },
+    "/rule_alerts/process": {
+      "get": {
+        "tags": [
+          "Groww-backoffice"
+        ],
+        "summary": "Traiter les alertes de règles",
+        "description": "Supprime les alertes fixées et non exceptionnelles, puis re-traite les règles sur les plants.",
+        "responses": {
+          "200": {
+            "description": "Opération réussie et redirection"
+          }
+        }
+      }
+    },
+    "/rule_alerts/fixed": {
+      "post": {
+        "tags": [
+          "Groww-backoffice"
+        ],
+        "summary": "Basculer l'état 'Fixed'",
+        "description": "Bascule l'état 'fixed' pour une alerte de règle donnée basée sur l'identifiant de la règle et du plant.",
+        "parameters": [
+          {
+            "name": "rule",
+            "in": "formData",
+            "description": "Identifiant de la règle",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id_plant",
+            "in": "formData",
+            "description": "Identifiant du plant",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "État 'fixed' basculé et redirection de l'utilisateur"
+          }
+        }
+      }
+    },
+    "/rule_alerts/exception": {
+      "post": {
+        "tags": [
+          "Groww-backoffice"
+        ],
+        "summary": "Basculer l'état 'Exception'",
+        "description": "Bascule l'état 'exception' pour une alerte de règle donnée basée sur l'identifiant de la règle et du plant.",
+        "parameters": [
+          {
+            "name": "rule",
+            "in": "formData",
+            "description": "Identifiant de la règle",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id_plant",
+            "in": "formData",
+            "description": "Identifiant du plant",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "État 'exception' basculé et redirection de l'utilisateur"
+          }
+        }
+      }
+    },
+    "/rule_alerts/delete": {
+      "post": {
+        "tags": [
+          "Groww-backoffice"
+        ],
+        "summary": "Supprimer une alerte de règle",
+        "description": "Supprime une alerte de règle spécifique basée sur l'identifiant de la règle et du plant.",
+        "parameters": [
+          {
+            "name": "rule",
+            "in": "formData",
+            "description": "Identifiant de la règle",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id_plant",
+            "in": "formData",
+            "description": "Identifiant du plant",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Alerte de règle supprimée et redirection de l'utilisateur"
+          }
+        }
+      }
+    },
+    "/rule_alerts/index": {
+      "get": {
+        "tags": [
+          "Groww-backoffice"
+        ],
+        "summary": "Action d'index",
+        "description": "Redirige vers la liste des alertes de règles.",
+        "responses": {
+          "302": {
+            "description": "Redirection vers /rule_alerts/list/"
+          }
+        }
+      }
+    },
+    "/seasons": {
+      "post": {
+        "tags": [
+          "Groww-backoffice"
+        ],
+        "summary": "Créer une nouvelle saison",
+        "description": "Crée une nouvelle saison avec les informations fournies",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "field",
+            "in": "formData",
+            "description": "Champ associé à la saison",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "picture",
+            "in": "formData",
+            "description": "Image de la saison",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "background_color",
+            "in": "formData",
+            "description": "Couleur de fond (sera ignorée si égale à '#000000')",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "order",
+            "in": "formData",
+            "description": "Ordre de la saison",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "visible",
+            "in": "formData",
+            "description": "Indique si la saison est visible",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Saison créée avec succès"
+          },
+          "default": {
+            "description": "Erreur lors de la création de la saison"
+          }
+        }
+      }
+    },
+    "/seasons/{id}": {
+      "put": {
+        "tags": [
+          "Groww-backoffice"
+        ],
+        "summary": "Modifier une saison existante",
+        "description": "Modifie la saison spécifiée par son identifiant",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Identifiant de la saison",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "field",
+            "in": "formData",
+            "description": "Champ associé à la saison",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "picture",
+            "in": "formData",
+            "description": "Image de la saison",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "background_color",
+            "in": "formData",
+            "description": "Couleur de fond (sera ignorée si égale à '#000000')",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "order",
+            "in": "formData",
+            "description": "Ordre de la saison",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "visible",
+            "in": "formData",
+            "description": "Indique si la saison est visible",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Saison modifiée avec succès"
+          },
+          "default": {
+            "description": "Erreur lors de la modification de la saison"
+          }
+        }
+      }
+    },
+    "/translation/save": {
+      "post": {
+        "tags": [
+          "Groww-backoffice"
+        ],
+        "summary": "Sauvegarder une traduction.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id_tk": {
+                    "type": "string"
+                  },
+                  "locale": {
+                    "type": "string"
+                  },
+                  "translation": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id_tk",
+                  "locale"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Traduction sauvegardée avec succès."
+          }
+        }
+      }
+    },
+    "/translation/verify": {
+      "post": {
+        "tags": [
+          "Groww-backoffice"
+        ],
+        "summary": "Vérifier une traduction.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id_tk": {
+                    "type": "string"
+                  },
+                  "locale": {
+                    "type": "string"
+                  },
+                  "verified": {
+                    "type": "string",
+                    "enum": [
+                      "0",
+                      "1"
+                    ]
+                  }
+                },
+                "required": [
+                  "id_tk",
+                  "locale",
+                  "verified"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "État de vérification mis à jour avec succès."
+          }
+        }
+      }
+    },
+    "/translation/list": {
+      "get": {
+        "tags": [
+          "Groww-backoffice"
+        ],
+        "summary": "Lister les traductions.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Numéro de page (défaut: 1)"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 500
+            },
+            "description": "Nombre d'éléments par page (défaut: 500)"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Terme de recherche"
+          },
+          {
+            "name": "verified",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "description": "Filtrer par vérification (true/false)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des traductions récupérée avec succès."
+          }
+        }
+      }
+    },
+    "/translation": {
+      "get": {
+        "tags": [
+          "Groww-backoffice"
+        ],
+        "summary": "Redirection vers la liste des traductions.",
+        "responses": {
+          "302": {
+            "description": "Redirection vers /translation/list"
+          }
+        }
+      }
+    },
+    "/administrator": {
+      "post": {
+        "tags": ["Groww-backoffice"],
+        "summary": "Create a new administrator",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "username": { "type": "string" },
+                "password": { "type": "string" },
+                "confirm": { "type": "string" }
+              },
+              "required": ["username", "password", "confirm"]
+            }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Administrator created successfully" },
+          "400": { "description": "Password and Confirm don't match" }
+        }
+      }
+    },
+    "/administrator/{id}": {
+      "put": {
+        "tags": ["Groww-backoffice"],
+        "summary": "Edit an administrator",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "username": { "type": "string" }
+              },
+              "required": ["username"]
+            }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Administrator updated successfully" }
+        }
+      },
+      "delete": {
+        "tags": ["Groww-backoffice"],
+        "summary": "Delete an administrator",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Administrator deleted successfully" },
+          "400": { "description": "Can't delete yourself!" }
+        }
+      }
+    },
+    "/localized/list": {
+      "get": {
+        "tags": ["Groww-backoffice"],
+        "summary": "Lister les éléments avec pagination et recherche",
+        "parameters": [
+          {"name": "page", "in": "query", "schema": {"type": "integer", "default": 1}},
+          {"name": "limit", "in": "query", "schema": {"type": "integer", "default": 100}},
+          {"name": "search", "in": "query", "schema": {"type": "string"}}
+        ],
+        "responses": {
+          "200": {"description": "Réponse réussie"}
+        }
+      }
+    },
+    "/localized/create": {
+      "post": {
+        "tags": ["Groww-backoffice"],
+        "summary": "Créer un nouvel élément",
+        "responses": {
+          "201": {"description": "Élément créé avec succès"},
+          "400": {"description": "Requête invalide"}
+        }
+      }
+    },
+    "/localized/edit/{id}": {
+      "post": {
+        "tags": ["Groww-backoffice"],
+        "summary": "Modifier un élément existant",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "responses": {
+          "200": {"description": "Élément mis à jour avec succès"},
+          "404": {"description": "Élément non trouvé"}
+        }
+      }
+    },
+    "/localized/translate/{id}": {
+      "post": {
+        "tags": ["Groww-backoffice"],
+        "summary": "Traduire un élément",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "responses": {
+          "200": {"description": "Traduction enregistrée avec succès"},
+          "404": {"description": "Élément non trouvé"}
+        }
+      }
+    },
+    "/localized/visible/{id}": {
+      "post": {
+        "tags": ["Groww-backoffice"],
+        "summary": "Définir la visibilité d'un élément",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "responses": {
+          "200": {"description": "Visibilité mise à jour avec succès"},
+          "404": {"description": "Élément non trouvé"}
+        }
+      }
+    },
+    "/localized/delete/{id}": {
+      "post": {
+        "tags": ["Groww-backoffice"],
+        "summary": "Supprimer un élément",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "responses": {
+          "200": {"description": "Élément supprimé avec succès"},
+          "404": {"description": "Élément non trouvé"}
+        }
+      }
+    },
+    "/localized/view/{id}": {
+      "get": {
+        "tags": ["Groww-backoffice"],
+        "summary": "Afficher un élément",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "responses": {
+          "200": {"description": "Détails de l'élément"},
+          "404": {"description": "Élément non trouvé"}
+        }
+      }
+    },
+    "/localized/index": {
+      "get": {
+        "tags": ["Groww-backoffice"],
+        "summary": "Rediriger vers la liste",
+        "responses": {
+          "302": {"description": "Redirection vers /localized/list"}
+        }
+      }
+    },
+    "/belongToPlant/list/{id_plant}": {
+      "get": {
+        "tags": ["Groww-backoffice"],
+        "summary": "Lister les éléments appartenant à une plante",
+        "parameters": [
+          {"name": "id_plant", "in": "path", "required": true, "schema": {"type": "integer"}},
+          {"name": "page", "in": "query", "schema": {"type": "integer", "default": 1}},
+          {"name": "limit", "in": "query", "schema": {"type": "integer", "default": 100}},
+          {"name": "search", "in": "query", "schema": {"type": "string"}}
+        ],
+        "responses": {
+          "200": {"description": "Réponse réussie"}
+        }
+      }
+    },
+    "/belongToPlant/create/{id_plant}": {
+      "post": {
+        "tags": ["Groww-backoffice"],
+        "summary": "Créer un nouvel élément pour une plante",
+        "parameters": [
+          {"name": "id_plant", "in": "path", "required": true, "schema": {"type": "integer"}}
+        ],
+        "responses": {
+          "201": {"description": "Élément créé avec succès"}
+        }
+      }
+    },
+    "/belongToPlant/edit/{id_plant}/{id}": {
+      "post": {
+        "tags": ["Groww-backoffice"],
+        "summary": "Modifier un élément",
+        "parameters": [
+          {"name": "id_plant", "in": "path", "required": true, "schema": {"type": "integer"}},
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}
+        ],
+        "responses": {
+          "200": {"description": "Élément mis à jour avec succès"}
+        }
+      }
+    },
+    "/belongToPlant/delete/{id_plant}/{id}": {
+      "post": {
+        "tags": ["Groww-backoffice"],
+        "summary": "Supprimer un élément",
+        "parameters": [
+          {"name": "id_plant", "in": "path", "required": true, "schema": {"type": "integer"}},
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}
+        ],
+        "responses": {
+          "200": {"description": "Élément supprimé avec succès"}
+        }
+      }
+    },
+    "/belongToPlant/view/{id_plant}/{id}": {
+      "get": {
+        "tags": ["Groww-backoffice"],
+        "summary": "Afficher un élément",
+        "parameters": [
+          {"name": "id_plant", "in": "path", "required": true, "schema": {"type": "integer"}},
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}
+        ],
+        "responses": {
+          "200": {"description": "Réponse réussie"}
+        }
+      }
+    },
+      "Badges" : {
+        
+      },
+      "Categories" : {
+        
+      },
+      "Todos" : {
+        
+      },
+      "Cycles de vie" : {
+        
+      },
+      "Plantes" : {
+        
+      },
+      "Partenaire" : {
+        
+      },
+      "Alertes" : {
+        
+      },
+      "Saisons" : {
+        
+      },
+      "Traductions" : {
+        
+      },
+      "Administrateur" : {
+        
+      },
         "extract-weather / index":{
             "get": {
     "tags": ["Groww-scripts-next"],
@@ -3017,6 +4437,25 @@ module.exports = function postConditions(\n  todo,\n  user_plant,\n  at_start_ev
 
     },
     "definitions": {
+      "Action": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string" },
+        "group": { "type": "string" },
+        "diary": { "type": "string" },
+        "order": { "type": "integer" },
+        "background_color": { "type": "string" },
+        "at_start": { "type": "boolean" },
+        "at_end": { "type": "boolean" },
+        "user_interaction": { "type": "boolean" },
+        "notify": { "type": "boolean" },
+        "visible": { "type": "boolean" },
+        "conditions": {
+          "type": "array",
+          "items": { "type": "integer" }
+        }
+      }
+    },
     "CreateUserRequest": {
       "type": "object",
       "properties": {
